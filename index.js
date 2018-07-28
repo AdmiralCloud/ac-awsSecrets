@@ -11,6 +11,7 @@ const awsSecrets = () => {
     const multiSecrets = _.get(params, 'multisecrets', [])
     const secrets = _.get(params, 'secrets', [])
     let config = _.get(params, 'config', {}) // the config object -> will be changed by reference
+    const environment = _.get(config, 'environment', 'development')
 
     const region = _.get(params, 'aws.region', 'eu-central-1')
     const endpoint = _.find(awsEndpoints, { region })
@@ -74,6 +75,7 @@ const awsSecrets = () => {
       fetchSecrets: function(done) {
         if (!_.size(secrets)) return done()
         async.each(secrets, (secret, itDone) => {
+          if (environment === 'test' && _.get(secret, 'ignoreInTestMode')) return itDone()
           // key is the local configuration path
           let key = _.get(secret, 'key')
           // secret name is the name used to fetch the secret
@@ -81,7 +83,6 @@ const awsSecrets = () => {
 
           client.getSecretValue({ SecretId: secretName }, function(err, data) {
             if (err) {
-              if (_.get(secret, 'ignoreInTestMode')) return itDone()
               if (_.get(secret, 'ignoreIfMissing')) return itDone() // this is an optional key
 
               console.error('Fetching secret %s failed', secretName, _.get(err, 'message', err))

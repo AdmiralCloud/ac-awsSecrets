@@ -3,44 +3,35 @@ Reads secrets from AWS secrets manager and adds them to the configuration of the
 
 ## Usage
 
-***byteConverter.format(value, [unit], [options])***
-
-Converts a value in bytes to a human-readable value.
-
-+ value -> bytes (NUMBER) to converts
-+ unit -> optional unit (STRING) to convert bytes to (e.g. MB, MiB). If not set, will be auto-detected based on the value (e.g. 10000 will be converted to 10kB)
-+ options -> optional object with options
-  + system -> can be "si" or "iec", defaults to si
-  + decimals -> number of decimals to show, defaults to 2
-
-
-***byteConverter.parse(value, [options])***
-
-Converts a human readable value into bytes.
-
-+ value -> human readable value (STRING) to convert to bytes
-+ options -> optional object with options
-  + system -> can be "si" or "iec", will be auto-detected
-  + decimals -> number of decimals to show, defaults to 2
-
-
-## Examples
-
 ```
-const byteConverter = require('ac-byteConverter')
+const secretParams = {
+  aws: {
+    accessKeyId: 'accessKeyId',
+    secretAccessKey: 'secretAccessKey',
+    region: 'eu-central-1'
+  },
+  secrets: [
+    { key: 'redis', name: 'redis.cacheServer', servers: true, serverName: 'cacheServer', ignoreInTestMode: true }
+  ],
+  config: existingConfig,
+  environment: 'development'
+}
 
-// convert 1000 to 1kb
-byteConverter.format(1000)
-
-// convert 1 MB to 1000000 bytes
-byteConverter.parse('1MB')
-// 1000000
-
-// convert 1 Mebibyte to 1048576 bytes
-byteConverter.parse('1MiB')
-// 1048576
-
+awsSecrets.loadSecrets(secretParams, (err, result) => {
+  if (err) return cb(err)
+  _.forEach(result, (item) => {
+    console.log('Setting secret for', _.padEnd(_.get(item, 'key'), 25), '->', _.get(item, 'name'))
+  })
+  return cb()
+})
 ```
+
+## Parameters
++ aws - object with accessKeyId, secretAccessKey and region (IAM user must have permission to read the secrets)
++ secrets - array of secrets to fetch
++ config - the current config (secrets will be merged into it)
++ environment - the current node environment (e.g. test, production, ... defaults to development)
+
 ## License
 
 MIT
