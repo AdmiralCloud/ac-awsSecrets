@@ -1,0 +1,32 @@
+{
+  "name": "ac-awssecrets",
+  "author": "Mark Poepping (https://www.mmpro.de)",
+  "license": "MIT",
+  "repository": "mmpro/ac-awsSecrets",
+  "version": "0.0.1",
+  "dependencies": {
+    "async": "^2.6.1",
+    "aws-sdk": "^2.282.1",
+    "lodash": "^4.x"
+  },
+  "devDependencies": {
+    "eslint": "^5.0.x",
+    "eslint-config-standard": "^11.x",
+    "eslint-plugin-import": "^2.13.0",
+    "eslint-plugin-node": "^6.x",
+    "eslint-plugin-promise": "^3.8.0",
+    "eslint-plugin-standard": "^3.x",
+    "expect": "^23.3.0",
+    "mocha": "^5.2.0",
+    "mocha-jenkins-reporter": "^0.3.12",
+    "mocha-junit-reporter": "^1.17.0",
+    "mocha-multi-reporters": "^1.1.4"
+  },
+  "scripts": {
+    "test": "mocha --reporter spec",
+    "test-jenkins": "JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --reporter-options junit_report_name='ByteConverter'"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  }
+}
