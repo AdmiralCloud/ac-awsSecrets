@@ -79,7 +79,7 @@ const awsSecrets = () => {
           // key is the local configuration path
           let key = _.get(secret, 'key')
           // secret name is the name used to fetch the secret
-          let secretName = (config.environment === 'test' ? 'test.' : '') + _.get(secret, 'name')
+          let secretName = (config.environment === 'test' ? 'test.' : '') + _.get(secret, 'name') + (_.get(secret, 'suffix') ? '.' + _.get(secret, 'suffix') : '')
 
           client.getSecretValue({ SecretId: secretName }, function(err, data) {
             if (err) {
