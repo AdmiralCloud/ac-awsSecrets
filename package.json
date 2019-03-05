@@ -3,23 +3,23 @@
   "author": "Mark Poepping (https://www.mmpro.de)",
   "license": "MIT",
   "repository": "mmpro/ac-awsSecrets",
-  "version": "0.0.3",
+  "version": "1.0.0",
   "dependencies": {
-    "async": "^2.6.1",
-    "aws-sdk": "^2.282.1",
-    "lodash": "^4.x"
+    "async": "^2.6.2",
+    "aws-sdk": "^2.414.0",
+    "lodash": "^4.17.11"
   },
   "devDependencies": {
-    "eslint": "^5.0.x",
-    "eslint-config-standard": "^11.x",
-    "eslint-plugin-import": "^2.13.0",
-    "eslint-plugin-node": "^6.x",
-    "eslint-plugin-promise": "^3.8.0",
-    "eslint-plugin-standard": "^3.x",
-    "expect": "^23.3.0",
-    "mocha": "^5.2.0",
-    "mocha-jenkins-reporter": "^0.3.12",
-    "mocha-junit-reporter": "^1.17.0",
+    "eslint": "^5.15.1",
+    "eslint-config-standard": "^12.x",
+    "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-node": "^8.x",
+    "eslint-plugin-promise": "^4.x",
+    "eslint-plugin-standard": "^4.x",
+    "expect": "^24.x",
+    "mocha": "^6.x",
+    "mocha-jenkins-reporter": "^0.4.1",
+    "mocha-junit-reporter": "^1.18.0",
     "mocha-multi-reporters": "^1.1.4"
   },
   "scripts": {
