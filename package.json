@@ -19,7 +19,7 @@
     "expect": "^24.8.0",
     "mocha": "^6.1.4",
     "mocha-jenkins-reporter": "^0.4.1",
-    "mocha-junit-reporter": "^1.22.0",
+    "mocha-junit-reporter": "^1.23.0",
     "mocha-multi-reporters": "^1.1.4"
   },
   "scripts": {
