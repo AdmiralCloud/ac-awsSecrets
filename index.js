@@ -105,6 +105,7 @@ const awsSecrets = () => {
                       _.set(value, key, JSON.parse(val.substr(5)))
                     }
                     catch (e) {
+                      throw e
                     }
                   }
                 })
