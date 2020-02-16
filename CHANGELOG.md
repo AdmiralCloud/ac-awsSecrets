@@ -1,3 +1,14 @@
+<a name="1.1.0"></a>
+# [1.1.0](https://github.com/mmpro/ac-awssecrets/compare/v1.0.1...v1.1.0) (2020-02-16 18:42)
+
+
+### Features
+
+* **Misc:** The servers parameter now support more flexibility | mp ([01f0a798f543108ecef72771de5705764f7db82f](https://github.com/mmpro/ac-awssecrets/commit/01f0a798f543108ecef72771de5705764f7db82f))    
+  You can set custom identifiers for array of objects - see README
+
+
+
 <a name="1.0.1"></a>
 ## [1.0.1](https://github.com/mmpro/ac-awssecrets/compare/v1.0.0...v1.0.1) (2019-07-24 19:43)
 
