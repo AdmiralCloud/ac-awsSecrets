@@ -3,6 +3,23 @@ Reads secrets from AWS secrets manager and adds them to the configuration of the
 
 ## Usage
 
+### Simple example
+Lets assume we have the following configuration and secret
+
+```
+let existingConfig = {
+  redis: {
+    host: 'localhost'
+  }
+}
+
+// Stored under name "redis.cacheServer" in AWS
+let secret = {
+  host: 'my-secret-server'
+}
+```
+
+The following setup will replace the existing configuration and redis.host will be "my-secret-server"
 ```
 const secretParams = {
   aws: {
@@ -11,7 +28,7 @@ const secretParams = {
     region: 'eu-central-1'
   },
   secrets: [
-    { key: 'redis', name: 'redis.cacheServer', servers: true, serverName: 'cacheServer', ignoreInTestMode: true }
+    { key: 'redis', name: 'redis.cacheServer', ignoreInTestMode: true }
   ],
   config: existingConfig,
   environment: 'development'
@@ -24,6 +41,52 @@ awsSecrets.loadSecrets(secretParams, (err, result) => {
   })
   return cb()
 })
+```
+
+### Example with array of objects
+
+```
+let existingConfig = {
+  redis: {
+    databases: [
+      { db: 0, name: 'cache' },
+      { db: 1, name: 'auth' }
+    ]
+  }
+}
+
+// secret stored under "redis.cacheServer"
+let secret = {
+  host: 'my-secret-server'
+
+// secert storend under "redis.authServer"
+let secret = {
+  host: 'my-auth-server
+}
+
+// now use the function
+const secretParams = {
+  aws: {
+    accessKeyId: 'accessKeyId',
+    secretAccessKey: 'secretAccessKey',
+    region: 'eu-central-1'
+  },
+  secrets: [
+    { key: 'redis.databases', name: 'redis.cacheServer', servers: { identifier: 'name', value: 'cache' } }
+    { key: 'redis.databases', name: 'redis.authServer', servers: { identifier: 'name', value: 'auth' } }
+  ],
+  config: existingConfig,
+  environment: 'development'
+}
+
+awsSecrets.loadSecrets(secretParams, (err, result) => {
+  // now 
+  redis.databases: [
+    { db: 0, name: 'cache', host: 'my-secret-server' },
+    { db: 1, name: 'auth', host: 'my-auth-server' }
+  ]
+})
+
 ```
 
 ## Parameters

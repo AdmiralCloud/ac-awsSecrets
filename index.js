@@ -24,7 +24,7 @@ const awsSecrets = () => {
 
     let result = []
     async.series({
-      fetchPlacholders: function(done) {
+      fetchPlacholders: (done) => {
         if (!_.size(multiSecrets)) return done()
         // some keys can have multiple entries (e.g. cloudfrontCOnfigs can have 1 - n entries)
         // we have to fetch them first from a secret and add them to the secrets to fetch
@@ -72,7 +72,7 @@ const awsSecrets = () => {
           })
         }, done)
       },
-      fetchSecrets: function(done) {
+      fetchSecrets: (done) => {
         if (!_.size(secrets)) return done()
         async.each(secrets, (secret, itDone) => {
           if (environment === 'test' && _.get(secret, 'ignoreInTestMode')) return itDone()
@@ -126,7 +126,16 @@ const awsSecrets = () => {
             let existingValue = _.get(config, key, {})
 
             if (secret.servers) {
-              existingValue = _.find(_.get(config, key + '.servers', []), { server: secret.serverName })
+              if (_.isBoolean(secret.servers)) {
+                // LEGACY SUPPORT FOR OLD NOTATION - DEPRECATED - DO NOT USE ANY LONGER
+                existingValue = _.find(_.get(config, key + '.servers', []), { server: secret.serverName })
+              }
+              else {
+                // NEW NOTATION AS OBJECT
+                let match = {}
+                _.set(match, _.get(secret.servers, 'identifier'), _.get(secret.servers, 'value'))
+                existingValue = _.find(_.get(config, key, []), match)      
+              }
             }
             if (_.get(secret, 'type') === 'array') {
               let array = []
