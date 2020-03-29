@@ -1,3 +1,16 @@
+<a name="1.1.1"></a>
+
+## [1.1.1](https://github.com/mmpro/ac-awssecrets/compare/v1.1.0..v1.1.1) (2020-03-29 14:10:49)
+
+
+### Bug Fix
+
+* **App:** Prepare repository for AC semantic release | MP | [f8f652bc09e1581e2ec35b3be6d51045bb905576](https://github.com/mmpro/ac-awssecrets/commit/f8f652bc09e1581e2ec35b3be6d51045bb905576)    
+Cleaned up repository and use ac-semantic-release
+### Chores
+
+* **Misc:** Updated packages | MP | [83244d834fd80f34fbaf450fdefcdfa5b78f91f2](https://github.com/mmpro/ac-awssecrets/commit/83244d834fd80f34fbaf450fdefcdfa5b78f91f2)    
+Updated packages
 <a name="1.1.0"></a>
 # [1.1.0](https://github.com/mmpro/ac-awssecrets/compare/v1.0.1...v1.1.0) (2020-02-16 18:42)
 
