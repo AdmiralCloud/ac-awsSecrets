@@ -10,26 +10,12 @@
     "lodash": "^4.17.15"
   },
   "devDependencies": {
-    "ac-conventional-changelog-template": "git+https://github.com/mmpro/ac-conventional-changelog-template.git",
-    "corp-semantic-release": "git+https://github.com/mmpro/corp-semantic-release.git",
-    "cz-customizable": "git+https://github.com/mmpro/cz-customizable.git",
+    "ac-semantic-release": "^0.1.1",
     "eslint": "6.x",
-    "expect": "^24.8.0",
-    "mocha": "^7.0.1",
-    "mocha-jenkins-reporter": "^0.4.1",
-    "mocha-junit-reporter": "^1.23.0"
-  },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
-    },
-    "cz-customizable": {
-      "config": ".czConfig.js"
-    }
+    "mocha": "^7.0.1"
   },
   "scripts": {
-    "test": "mocha --reporter spec",
-    "test-jenkins": "JUNIT_REPORT_PATH=./report.xml mocha --colors --reporter mocha-jenkins-reporter --reporter-options junit_report_name='ByteConverter'"
+    "test": "mocha --reporter spec"
   },
   "engines": {
     "node": ">=8.0.0"
