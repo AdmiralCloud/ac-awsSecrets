@@ -5,14 +5,14 @@
   "repository": "mmpro/ac-awssecrets",
   "version": "1.1.1",
   "dependencies": {
-    "async": "^3.1.1",
-    "aws-sdk": "^2.619.0",
-    "lodash": "^4.17.15"
+    "async": "^3.2.0",
+    "aws-sdk": "^2.918.0",
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "ac-semantic-release": "^0.1.1",
-    "eslint": "6.x",
-    "mocha": "^7.0.1"
+    "ac-semantic-release": "^0.2.6",
+    "eslint": "7.x",
+    "mocha": "^8.4.0"
   },
   "scripts": {
     "test": "mocha --reporter spec"
