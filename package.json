@@ -5,14 +5,14 @@
   "repository": "admiralcloud/ac-awssecrets",
   "version": "1.1.4",
   "dependencies": {
-    "async": "^3.2.1",
-    "aws-sdk": "^2.1004.0",
+    "async": "^3.2.3",
+    "aws-sdk": "^2.1101.0",
     "lodash": "^4.17.21"
   },
   "devDependencies": {
-    "ac-semantic-release": "^0.2.6",
-    "eslint": "7.x",
-    "mocha": "^9.1.2"
+    "ac-semantic-release": "^0.2.7",
+    "eslint": "8.x",
+    "mocha": "^9.2.2"
   },
   "scripts": {
     "test": "mocha --reporter spec"
