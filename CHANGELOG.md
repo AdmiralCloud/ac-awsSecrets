@@ -1,3 +1,12 @@
+<a name="1.1.5"></a>
+
+## [1.1.5](https://github.com/mmpro/ac-awssecrets/compare/v1.1.4..v1.1.5) (2022-03-27 17:29:49)
+
+
+### Bug Fix
+
+* **App:** Package updates | MP | [926d148478906d89f66210d44fb72e6dcc23c8ac](https://github.com/mmpro/ac-awssecrets/commit/926d148478906d89f66210d44fb72e6dcc23c8ac)    
+Package updates
 <a name="1.1.4"></a>
 
 ## [1.1.4](https://github.com/mmpro/ac-awssecrets/compare/v1.1.3..v1.1.4) (2021-10-09 10:18:52)
