@@ -36,13 +36,13 @@
   resolved "https://registry.yarnpkg.com/@ungap/promise-all-settled/-/promise-all-settled-1.1.2.tgz#aa58042711d6e3275dd37dc597e5d31e8c290a44"
   integrity sha512-sL/cEvJWAnClXw0wHk85/2L0G6Sj8UB0Ctc1TEMbKSsmpRosqhwj9gWgFRZSrBr2f9tiXISwNhCPmlfqUqyb9Q==
 
-ac-semantic-release@^0.2.7:
-  version "0.2.7"
-  resolved "https://registry.yarnpkg.com/ac-semantic-release/-/ac-semantic-release-0.2.7.tgz#a4032387bc2accd5ae8d06389abb1dba9803b1d9"
-  integrity sha512-rkIuSyAjTWq5rtm0/+1Eb9oiHB2HtLbq11tK7T+4P+he6xL6W6QDyM8uGq2x7MZHm11o8LKnnutDwC3x0RLf3g==
+ac-semantic-release@^0.3.0:
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/ac-semantic-release/-/ac-semantic-release-0.3.0.tgz#925c8169f66c14ffa1567f96692ae0bf32b507ed"
+  integrity sha512-cieH+gFFyQ7tc+v39xultuCuRPUHUZ6PMTZMco067UjqJFez/PzFRoArsa7033MqnkzGXLzVdTSoUhLZQU/m+A==
   dependencies:
-    async "^3.2.1"
-    inquirer "^8.2.0"
+    async "^3.2.3"
+    inquirer "^8.2.2"
     lodash "^4.17.21"
 
 acorn-jsx@^5.3.1:
@@ -102,20 +102,15 @@ argparse@^2.0.1:
   resolved "https://registry.yarnpkg.com/argparse/-/argparse-2.0.1.tgz#246f50f3ca78a3240f6c997e8a9bd1eac49e4b38"
   integrity sha512-8+9WqebbFzpX9OR+Wa6O29asIogeRMzcGtAINdpMHHyAg10f05aSFVBbcEqGf/PXw1EjAZ+q2/bEBg3DvurK3Q==
 
-async@^3.2.1:
-  version "3.2.1"
-  resolved "https://registry.yarnpkg.com/async/-/async-3.2.1.tgz#d3274ec66d107a47476a4c49136aacdb00665fc8"
-  integrity sha512-XdD5lRO/87udXCMC9meWdYiR+Nq6ZjUfXidViUZGu2F1MO4T3XwZ1et0hb2++BgLfhyJwy44BGB/yx80ABx8hg==
-
 async@^3.2.3:
   version "3.2.3"
   resolved "https://registry.yarnpkg.com/async/-/async-3.2.3.tgz#ac53dafd3f4720ee9e8a160628f18ea91df196c9"
   integrity sha512-spZRyzKL5l5BZQrr/6m/SqFdBN0q3OCI0f9rjfBzCMBIP4p75P620rR3gTmaksNOhmzgdxcaxdNfMy6anrbM0g==
 
-aws-sdk@^2.1101.0:
-  version "2.1101.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1101.0.tgz#67b685436d909bbe5c608ca890a4abe1128dd573"
-  integrity sha512-7lyVb7GXGl8yyu954Qxf6vU6MrcgFlmKyTLBVXJyo3Phn1OB+qOExA55WtSC6gQiQ7e5TeWOn1RUHLg30ywTBA==
+aws-sdk@^2.1117.0:
+  version "2.1117.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1117.0.tgz#9565fbf39caebd51c7822ab78fb3c07876e811d4"
+  integrity sha512-MBSEiLLlj8ULr8na118m44M2VvTlkyaw13J3rcHOlMSbuB2DpXBZTs2dJylFWv2szaOOSsUTo8vmc+pRJHC+Aw==
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -644,7 +639,7 @@ inherits@2, inherits@^2.0.3, inherits@^2.0.4:
   resolved "https://registry.yarnpkg.com/inherits/-/inherits-2.0.4.tgz#0fa2c64f932917c3433a0ded55363aae37416b7c"
   integrity sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==
 
-inquirer@^8.2.0:
+inquirer@^8.2.2:
   version "8.2.2"
   resolved "https://registry.yarnpkg.com/inquirer/-/inquirer-8.2.2.tgz#1310517a87a0814d25336c78a20b44c3d9b7629d"
   integrity sha512-pG7I/si6K/0X7p1qU+rfWnpTE1UIkTONN1wxtzh0d+dHXtT/JG6qBgLxoyHVsQa8cFABxAPh0pD6uUUHiAoaow==
