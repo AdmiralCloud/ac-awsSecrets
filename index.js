@@ -24,7 +24,7 @@ const awsSecrets = () => {
   const getKey = (obj, key) => key.split('.').reduce((acc, cur) => acc[cur], obj)
 
   const functionName = 'ac-awsSecrets'.padEnd(15)
-  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, testMode = 0 } = {}) => {
+  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, profile = process.env['profile'], testMode = 0 } = {}) => {
     const environment = config?.environment || 'development'
 
     const awsConfig = {
@@ -32,9 +32,9 @@ const awsSecrets = () => {
     }
     // credentials are determined from Lambda role.
     // But you can also use a set profile 
-    if (process.env['profile']) {
-      console.log('Using profile %s', process.env['profile'])
-      awsConfig.credentials = fromIni({ profile: process.env['profile'] })
+    if (profile) {
+      console.log('Using profile %s', profile)
+      awsConfig.credentials = fromIni({ profile })
     }
     const client = new SecretsManagerClient(awsConfig)
 
