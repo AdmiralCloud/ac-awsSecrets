@@ -5,12 +5,12 @@
   "repository": "admiralcloud/ac-awssecrets",
   "version": "1.1.6",
   "dependencies": {
-    "async": "^3.2.3",
-    "aws-sdk": "^2.1117.0",
-    "lodash": "^4.17.21"
+    "@aws-sdk/client-secrets-manager": "^3.278.0",
+    "@aws-sdk/credential-providers": "^3.278.0"
   },
   "devDependencies": {
     "ac-semantic-release": "^0.3.0",
+    "chai": "^4.3.7",
     "eslint": "8.x",
     "mocha": "^9.2.2"
   },

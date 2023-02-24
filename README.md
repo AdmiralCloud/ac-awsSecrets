@@ -1,7 +1,132 @@
 # AC AWS Secrets
 Reads secrets from AWS secrets manager and adds them to the configuration of the embedding app.
 
-## Usage
+# Version 2 - BREAKING CHANGES
++ works with Node16 or higher
++ async/await - no callback!
++ uses AWS IAM roles or AWS IAM profiles instead of IAM credentials
+
+# Parameters
+|Parameter|Type|Required|Description|
+|---|---|---|---|
+|key|string|yes|the local variable name|
+|name|string|yes|the name of the AWS secret|
+|servers|bool|-|See below
+|valueHasJSON|bool|-|If true, some properties have JSON content (prefixed with JSON:)
+
+# Usage
+AWS secret is a JSON object. Those properties will be merged with local config properties based on the secret's name.
+
+## Secret
+
+### Store secret in AWS
+```
+Example secret
+// name: mySecret1
+{
+  prop1: 'abc',
+  prop2: 123,
+  prop3: 'JSON:{"jprop1": "abc}'
+}
+```
+
+### Configure a local variable, that should be enhanced with the secret
+```
+const config = {
+  key1: {},
+  otherKey: {
+    prop10: 'https://www.admiralcloud.com'
+  }
+}
+```
+
+### Fetch secrets
+```
+const secrets = [
+  { key: 'key1', name: 'mySecret1' } // key is the config var, name is the AWS secret name
+]
+await awsSecrets.loadSecrets({ secrets, config })
+
+// config will change  - key1 will be enhanced with AWS secret
+const config = {
+  key1: {
+    prop1: 'abc',
+    prop2: 123,
+    prop3: 'JSON:{"jprop1": "abc}'
+  },
+  otherKey: {
+    prop10: 'https://www.admiralcloud.com'
+  }
+}
+
+```
+
+## Multisecrets
+Use multisecrets if you want to add a number of additional secrets to be fetched. Usually it is used to fetch multiple objects for an array of objects:
+
+### Store multisecret in AWS
+```
+Example secret
+// name: mySecret2
+{
+  values: '["aws.key1", "aws.key2"]'
+}
+```
+
+### Store secrets in AWS 
+```
+// name: aws.key1
+{
+  accessKeyId: 'awsKey1',
+  secretAccessKey: 'awsSecret1'
+}
+
+// name: aws.key2
+{
+  accessKeyId: 'awsKey2',
+  secretAccessKey: 'awsSecret2'
+}
+```
+
+### Configure a local variable, that should be enhanced with the secret
+```
+const config = {
+  mySecret2: [],
+  otherKey: {
+    prop10: 'https://www.admiralcloud.com'
+  }
+}
+```
+
+### Fetch secrets
+```
+const multisecrets = [
+  { key: 'mySecret2', name: 'mySecret2' } // key is the config var, name is the AWS secret name
+]
+const secrets = []
+await awsSecrets.loadSecrets({ secrets, multisecrets, config })
+
+// config will change  - key1 will be enhanced with AWS secret
+const config = {
+  mySecret2: [
+    {
+      accessKeyId: 'awsKey1',
+      secretAccessKey: 'awsSecret1'
+    },
+    {
+      accessKeyId: 'awsKey2',
+      secretAccessKey: 'awsSecret2'
+    }
+  ]
+}
+
+```
+
+
+
+
+# VERSION 1 - OUTDATED
+## Usage 
 
 ### Simple example
 Lets assume we have the following configuration and secret
@@ -89,16 +214,9 @@ awsSecrets.loadSecrets(secretParams, (err, result) => {
 
 ```
 
-## Parameters
-+ aws - object with accessKeyId, secretAccessKey and region (IAM user must have permission to read the secrets)
-+ secrets - array of secrets to fetch
-+ config - the current config (secrets will be merged into it)
-+ environment - the current node environment (e.g. test, production, ... defaults to development)
-
 ## Links
 - [Website](https://www.admiralcloud.com/)
-- [Twitter (@admiralcloud)](https://twitter.com/admiralcloud)
 - [Facebook](https://www.facebook.com/MediaAssetManagement/)
 
 ## License
-[MIT License](https://opensource.org/licenses/MIT) Copyright © 2009-present, AdmiralCloud, Mark Poepping
+[MIT License](https://opensource.org/licenses/MIT) Copyright © 2009-present, AdmiralCloud AG, Mark Poepping

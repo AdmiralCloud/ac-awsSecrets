@@ -1,181 +1,163 @@
-const _ = require('lodash')
-const async = require('async')
-const AWS = require('aws-sdk')
+const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
+const { fromIni } = require("@aws-sdk/credential-providers")
+
+const testConfig = require('./test/config')
 
 /**
- * @param aws OBJ object with aws configuration data
- */
+* Replaces configuration variables with secrets
+
+KEY is the variable name
+NAME is the name of the secret 
+
+OPT
+serverName
+
+MULTISECRETS
+Multisecrets -> the secret contains a list of secrets that should be fetched
+*
+* TESTMODES
+* 3 -> use secrets from testConfig
+*/
 
 const awsSecrets = () => {
-  const loadSecrets = (params, cb) => {
-    const multiSecrets = _.get(params, 'multisecrets', [])
-    const secrets = _.get(params, 'secrets', [])
-    let config = _.get(params, 'config', {}) // the config object -> will be changed by reference
-    const environment = _.get(config, 'environment', 'development')
 
-    const region = _.get(params, 'aws.region', 'eu-central-1')
-    const endpoint = _.find(awsEndpoints, { region })
-    const client = new AWS.SecretsManager({
-      accessKeyId: _.get(params, 'aws.accessKeyId'),
-      secretAccessKey: _.get(params, 'aws.secretAccessKey'),
-      region: region,
-      endpoint: _.get(endpoint, 'endpoint')
-    })
+  const getKey = (obj, key) => key.split('.').reduce((acc, cur) => acc[cur], obj)
 
-    let result = []
-    async.series({
-      fetchPlacholders: (done) => {
-        if (!_.size(multiSecrets)) return done()
-        // some keys can have multiple entries (e.g. cloudfrontCOnfigs can have 1 - n entries)
-        // we have to fetch them first from a secret and add them to the secrets to fetch
+  const functionName = 'ac-awsSecrets'.padEnd(15)
+  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, testMode = 0 } = {}) => {
+    const environment = config?.environment || 'development'
 
-        async.each(multiSecrets, (secret, itDone) => {
-          let secretName = (config.environment === 'test' ? 'test.' : '') + _.get(secret, 'name')
+    const awsConfig = {
+      region: 'eu-central-1'
+    }
+    // credentials are determined from Lambda role.
+    // But you can also use a set profile 
+    if (process.env['profile']) {
+      console.log('Using profile %s', process.env['profile'])
+      awsConfig.credentials = fromIni({ profile: process.env['profile'] })
+    }
+    const client = new SecretsManagerClient(awsConfig)
 
-          client.getSecretValue({ SecretId: secretName }, function(err, data) {
-            if (err) {
-              if (_.get(secret, 'ignoreInTestMode')) return itDone()
-              if (_.get(secret, 'ignoreIfMissing')) return itDone() // this is an optional key
+  
+    const getSecret = async({ secret }) => {
+      const secretName = (environment === 'test' ? 'test.' : '') + secret?.name + (secret?.suffix ? '.' + secret?.suffix : '')
 
-              console.error('Fetching secret %s failed', secretName, err)
-              return itDone({ message: err, additionalInfo: { key: secretName } })
-            }
-            if (!_.get(data, 'SecretString')) {
-              console.warn('Secret %s NOT avaialble', secretName, _.get(data, 'SecretString'))
-              return itDone()
-            }
-
-            let value
-            try {
-              value = JSON.parse(_.get(data, 'SecretString'))
-            }
-            catch (e) {
-              value = _.get(data, 'SecretString.values')
-            }
-
-            try {
-              value = JSON.parse(_.get(value, 'values'))
-            }
-            catch (e) {
-              return done({ message: 'placeHolderSecrets_valuesInvalid', additionalInfo: { key: secret.key } })
-            }
-
-            // value should be an array of keys
-            _.forEach(value, (item) => {
-              secrets.push({
-                key: secret.key,
-                name: item,
-                type: 'arrayObject'
-              })
-            })
-            return itDone()
-          })
-        }, done)
-      },
-      fetchSecrets: (done) => {
-        if (!_.size(secrets)) return done()
-        async.each(secrets, (secret, itDone) => {
-          if (environment === 'test' && _.get(secret, 'ignoreInTestMode')) return itDone()
-          // key is the local configuration path
-          let key = _.get(secret, 'key')
-          // secret name is the name used to fetch the secret
-          let secretName = (config.environment === 'test' ? 'test.' : '') + _.get(secret, 'name') + (_.get(secret, 'suffix') ? '.' + _.get(secret, 'suffix') : '')
-
-          client.getSecretValue({ SecretId: secretName }, function(err, data) {
-            if (err) {
-              if (_.get(secret, 'ignoreIfMissing')) return itDone() // this is an optional key
-
-              console.error('Fetching secret %s failed', secretName, _.get(err, 'message', err))
-              return itDone({ message: _.get(err, 'message', err), additionalInfo: { key: secretName } })
-            }
-            if (!_.get(data, 'SecretString')) {
-              console.warn('Secret %s NOT avaialble', secretName, _.get(data, 'SecretString'))
-              return itDone()
-            }
-
-            let value
-            try {
-              value = JSON.parse(_.get(data, 'SecretString'))
-
-              // if value is prefixed with JSON -> parse the value
-              if (_.get(value, 'valueHasJSON')) {
-                _.forEach(value, (val, key) => {
-                  if (_.startsWith(val, 'JSON:')) {
-                    try {
-                      _.set(value, key, JSON.parse(val.substr(5)))
-                    }
-                    catch (e) {
-                      throw e
-                    }
-                  }
-                })
-                // remove that entry
-                _.unset(value, 'valueHasJSON')
-              }
-            }
-            catch (e) {
-              value = _.get(data, 'SecretString')
-            }
-
-            // make sure boolean values are converted (from string)
-            value = _.mapValues(value, (val) => {
-              if (val === 'true') return true
-              else if (val === 'false') return false
-              else return val
-            })
-            let existingValue = _.get(config, key, {})
-
-            if (secret.servers) {
-              if (_.isBoolean(secret.servers)) {
-                // LEGACY SUPPORT FOR OLD NOTATION - DEPRECATED - DO NOT USE ANY LONGER
-                existingValue = _.find(_.get(config, key + '.servers', []), { server: secret.serverName })
-              }
-              else {
-                // NEW NOTATION AS OBJECT
-                let match = {}
-                _.set(match, _.get(secret.servers, 'identifier'), _.get(secret.servers, 'value'))
-                existingValue = _.find(_.get(config, key, []), match)      
-              }
-            }
-            if (_.get(secret, 'type') === 'array') {
-              let array = []
-              _.forEach(value, (val) => {
-                array.push(val)
-              })
-              value = _.concat(existingValue, array)
-            }
-
-            if (_.get(secret, 'type') === 'arrayObject') {
-              existingValue.push(value)
-            }
-            else {
-              let setFresh
-              if (_.isEmpty(existingValue)) setFresh = true
-              _.merge(existingValue, value)
-              // setFresh -> this property/path has never existed
-              if (setFresh) _.set(config, key, existingValue)
-            }
-
-            if (_.get(secret, 'log')) {
-              console.log(_.repeat('.', 90))
-              console.warn(key, existingValue)
-              console.warn(_.get(config, key))
-              console.warn(_.repeat('.', 90))
-            }
-
-            result.push({ key, name: _.get(secret, 'name', '-') })
-            return itDone()
-          })
-        }, done)
+      // TESTMODE
+      if (testMode === 3) {
+        // fetch from availableSecrets
+        let found = testConfig.availableSecrets.find(item => item.name === secret.name)
+        secret.value = found?.value
       }
-    }, (err) => {
-      return cb(err, _.orderBy(result, 'key'))
-    })
+      else {
+        const command = new GetSecretValueCommand({
+          SecretId: secretName
+        })
+        try {
+          const response = await client.send(command)
+          if (response?.SecretString) {
+            secret.value = JSON.parse(response?.SecretString)
+          }
+        }
+        catch(e) {
+          console.error('%s | %s | %s', functionName, secretName, e?.message)
+        }
+      }
+      return secret
+    }
+
+    const fetchSecrets = async({ secrets }) => {
+      // filter out secrets with ignoreInTestMode = true
+      if (environment === 'test') {
+        secrets = secrets.filter(secret => !secret.ignoreInTestMode)
+      }
+      return Promise.all(secrets.map(secret => getSecret({ secret })))
+    }
+
+    // fetch placeholder
+    if (multisecrets.length > 0) {
+      // some keys can have multiple entries (e.g. cloudfrontCOnfigs can have 1 - n entries)
+      // we have to fetch them first from a secret and add them to the secrets to fetch 
+      let secretsToAdd = await fetchSecrets({ secrets: multisecrets })
+      // iterate each multisecret and add the values as new secrets
+      secretsToAdd.forEach(secadd => {
+        let items = JSON.parse(secadd?.value?.values) || []
+        if (typeof items !== 'object' || items.length < 1) {
+          console.error('%s | %s | MultiSecret has no valid property values', functionName, secadd.name)
+          throw new Error('MultiSecret has no valid property values')
+        }
+        items.forEach(item => {
+          let p = {
+            key: secadd.key,
+            name: item,
+            type: 'arrayObject' // multisecrets contain multiple secrets that belong to the same config property (which is an array of objects)
+          }
+          secrets.push(p)
+        })
+      })
+    }
+
+    if (secrets.length > 0) {
+      await fetchSecrets({ secrets })
+      for (const secret of secrets) {
+        let existingValue = getKey(config, secret.key) || {}
+        let value = secret?.value
+
+        // convert values
+        if (typeof value === 'object') {
+          Object.keys(value).forEach((key) => {
+            let val = value[key]
+            if (val === 'true') val = true
+            else if (val === 'false') val = false
+            else if (typeof val === 'string' && val.startsWith('JSON:')) {
+              try {
+                val = JSON.parse(val.substring(5))
+              }
+              catch(e) {
+                console.error('%s | %s | JSON could not be parsed %j', functionName, secret.name, val)
+              }
+            }
+            value[key] = val
+          })
+        }
+
+        if (secret.servers) {
+          if (typeof secret.servers === 'boolean') {
+            let servers = existingValue?.servers || []
+            config[secret.key].servers = servers.map(server => {
+              if (server.server === secret.serverName) {
+                server = { ...server, ...value }
+              }
+              return server
+            })
+          }
+          else {
+            // NEW NOTATION AS OBJECT
+            /* TODO: Probably not used anywhere, so legacy is ok
+            let match = {}
+            _.set(match, _.get(secret.servers, 'identifier'), _.get(secret.servers, 'value'))
+            existingValue = _.find(_.get(config, key, []), match)   
+            */
+          }
+        }
+        else if (secret?.type === 'arrayObject') {
+          existingValue.push(value)  
+          config[secret.key] = existingValue
+        }
+        else {
+          if (Object.keys(existingValue).length === 0) {
+            config[secret.key] = {}
+          }
+          existingValue = { ...existingValue, ...value }
+          config[secret.key] = existingValue
+        }
+
+        if (secret?.log) {
+          console.log('%s | %s | %s', functionName, secret?.name, existingValue)
+        }
+      }
+    }  
   }
 
-  const awsEndpoints = [
-    { region: 'eu-central-1', endpoint: 'https://secretsmanager.eu-central-1.amazonaws.com' }
-  ]
 
   return {
     loadSecrets

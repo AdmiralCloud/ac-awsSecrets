@@ -5,7 +5,7 @@
 
 ### Bug Fix
 
-* **App:** Updated packages | MP | [1ad4baa1414604b20b6b702a40527ba5930b7cfd](https://github.com/mmpro/ac-awssecrets/commit/1ad4baa1414604b20b6b702a40527ba5930b7cfd)    
+* **App:** Updated packages | MP | [1ad4baa1414604b20b6b702a40527ba5930b7cfd](https://github.com/admiralcloud/ac-awssecrets/commit/1ad4baa1414604b20b6b702a40527ba5930b7cfd)    
 Updated packages  
 Related issues: [undefined/undefined#master](undefined/browse/master)
 <a name="1.1.5"></a>

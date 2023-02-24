@@ -1,4 +1,5 @@
 const config = {
+  root: true,
   'env': {
     'commonjs': true,
     'es6': true,
@@ -19,7 +20,7 @@ const config = {
     it: true
   },
   'parserOptions': {
-    'ecmaVersion': 2018
+    'ecmaVersion': 2022
 },
 }
 

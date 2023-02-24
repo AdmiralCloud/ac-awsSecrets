@@ -26,3 +26,4 @@ localtest.js
 # local config
 ########################
 .jenkins.conf
+config.js
