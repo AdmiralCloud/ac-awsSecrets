@@ -1,6 +1,9 @@
 # AC AWS Secrets
 Reads secrets from AWS secrets manager and adds them to the configuration of the embedding app.
 
+![example workflow](https://github.com/admiralcloud/ac-awssecrets/actions/workflows/node.js.yml/badge.svg)
+
+
 # Version 2 - BREAKING CHANGES
 + works with Node16 or higher
 + async/await - no callback!
