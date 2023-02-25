@@ -17,7 +17,9 @@ const config = {
   },
   globals: {
     describe: true,
-    it: true
+    it: true,
+    beforeEach: true,
+    afterEach: true
   },
   'parserOptions': {
     'ecmaVersion': 2022

@@ -12,6 +12,11 @@ const config = {
       port: 90
     }
   },
+  configVar5: {
+    path: {
+      cookie: false
+    }
+  },
   aws: {
     accessKeys: []
   }
@@ -20,7 +25,9 @@ const config = {
 const secrets = [
   { key: 'configVar1', name: 'simple' },
   { key: 'configVar2', name: 'server', servers: true, serverName: 'cacheRead' },
-  { key: 'configVar4', name: 'json' }
+  { key: 'configVar4', name: 'json' },
+  { key: 'configVar5.path', name: 'path' },
+  { key: 'configVar6', name: 'notExistingLocally' },
 ]
 
 const availableSecrets = [{
@@ -43,12 +50,36 @@ const availableSecrets = [{
 {
   key: 'configVar3',
   name: 'noSecret'
-}, {
+}, 
+{
   key: 'configVar4',
   name: 'json',
   value: {
     api: 'JSON:{"url":"https://api.admiralcloud.com"}',
     valueHasJSON: true
+  }
+},
+{
+  key: 'errorVar1',
+  name: 'invalidJSON',
+  value: {
+    api: 'JSON:abc',
+    valueHasJSON: true
+  }
+},
+{
+  key: 'configVar5.path',
+  name: 'path',
+  value: {
+    cookie: true
+  }
+},
+{
+  key: 'configVar6',
+  name: 'notExistingLocally',
+  value: {
+    prop1: 123,
+    prop2: 'abc'
   }
 },
 { 
