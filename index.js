@@ -23,8 +23,16 @@ const awsSecrets = () => {
 
   const getKey = (obj, key) => key.split('.').reduce((acc, cur) => acc[cur], obj)
 
+  const setKey = (obj, key, value ) => {
+    const [head, ...rest] = key.split('.')
+    !rest.length
+        ? obj[head] = value
+        : setKey(obj[head], rest.join('.'), value)
+  }
+
+
   const functionName = 'ac-awsSecrets'.padEnd(15)
-  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, profile = process.env['profile'], testMode = 0 } = {}) => {
+  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, profile = process.env['profile'], testMode = 0, debug = false } = {}) => {
     const environment = config?.environment || 'development'
 
     const awsConfig = {
@@ -33,7 +41,7 @@ const awsSecrets = () => {
     // credentials are determined from Lambda role.
     // But you can also use a set profile 
     if (profile) {
-      console.log('Using profile %s', profile)
+      console.error('%s | Using AWS profile | %s', functionName, profile)
       awsConfig.credentials = fromIni({ profile })
     }
     const client = new SecretsManagerClient(awsConfig)
@@ -114,6 +122,7 @@ const awsSecrets = () => {
               }
               catch(e) {
                 console.error('%s | %s | JSON could not be parsed %j', functionName, secret.name, val)
+                throw new Error('invalidJSON')
               }
             }
             value[key] = val
@@ -140,24 +149,23 @@ const awsSecrets = () => {
           }
         }
         else if (secret?.type === 'arrayObject') {
-          existingValue.push(value)  
-          config[secret.key] = existingValue
+          existingValue.push(value)
+          setKey(config, secret.key, existingValue)
         }
         else {
           if (Object.keys(existingValue).length === 0) {
-            config[secret.key] = {}
+            setKey(config, secret.key, {})
           }
           existingValue = { ...existingValue, ...value }
-          config[secret.key] = existingValue
+          setKey(config, secret.key, existingValue)
         }
 
-        if (secret?.log) {
-          console.log('%s | %s | %s', functionName, secret?.name, existingValue)
+        if (secret?.log || debug) {
+          console.log('%s | %s | %j', functionName, secret?.name, existingValue)
         }
       }
     }  
   }
-
 
   return {
     loadSecrets
