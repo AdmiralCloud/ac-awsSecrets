@@ -21,6 +21,7 @@ npm-debug.log
 doc
 report.xml
 localtest.js
+.nyc_output
 
 ########################
 # local config

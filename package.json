@@ -12,10 +12,12 @@
     "ac-semantic-release": "^0.3.5",
     "chai": "^4.3.7",
     "eslint": "8.x",
-    "mocha": "^10.2.0"
+    "mocha": "^10.2.0",
+    "nyc": "^15.1.0"
   },
   "scripts": {
-    "test": "mocha --reporter spec"
+    "test": "mocha --reporter spec",
+    "coverage": "./node_modules/nyc/bin/nyc.js report --reporter=lcov --reporter=text"
   },
   "engines": {
     "node": ">=8.0.0"
