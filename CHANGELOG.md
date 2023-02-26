@@ -1,3 +1,46 @@
+<a name="2.0.0"></a>
+ 
+# [2.0.0](https://github.com/admiralcloud/ac-awssecrets/compare/v1.1.6..v2.0.0) (2023-02-26 11:45:48)
+
+
+### Feature
+
+* **App:** Complete rewrite | MP | [782aeddf4f9f6d815a19762c1c92dc138b369478](https://github.com/admiralcloud/ac-awssecrets/commit/782aeddf4f9f6d815a19762c1c92dc138b369478)    
+Using AWS IAM roles/profiles, use async/await  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Bug Fix
+
+* **App:** Minor fixes | MP | [bc6c7cc832f98c939cf703e1b967bb7fdaa05c1f](https://github.com/admiralcloud/ac-awssecrets/commit/bc6c7cc832f98c939cf703e1b967bb7fdaa05c1f)    
+Improved error messages, make sure to get and set path based variables  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+* **App:** Improved AWS profile handling | MP | [28fddd68778b7ad52b7a6dff3468d09655dde43e](https://github.com/admiralcloud/ac-awssecrets/commit/28fddd68778b7ad52b7a6dff3468d09655dde43e)    
+Allow profile as parameter for function call (instead of just env variable)  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Tests
+
+* **App:** Added more tests | MP | [907289ea6e0b0406e5e82a2b7e7c84f0c8c9386f](https://github.com/admiralcloud/ac-awssecrets/commit/907289ea6e0b0406e5e82a2b7e7c84f0c8c9386f)    
+Added more tests  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+* **App:** Add config for test | MP | [8d21f27a15a49bc9544d7ba387d2eca99c336af2](https://github.com/admiralcloud/ac-awssecrets/commit/8d21f27a15a49bc9544d7ba387d2eca99c336af2)    
+Add config for test  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Documentation
+
+* **App:** Add badge for tests | MP | [93df1ae14f1daa77793010c0e24423ac13f64a89](https://github.com/admiralcloud/ac-awssecrets/commit/93df1ae14f1daa77793010c0e24423ac13f64a89)    
+Add badge for tests  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Chores
+
+* **App:** Add coverage test with nyc | MP | [1cdc7330d4be1abcbcd728ab4bc4c772b5489468](https://github.com/admiralcloud/ac-awssecrets/commit/1cdc7330d4be1abcbcd728ab4bc4c772b5489468)    
+Use yarn coverage  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Chores
+
+* **App:** Updated packages | MP | [c7e9f7965ac2e93b93282549dc86c7fc01b8f85c](https://github.com/admiralcloud/ac-awssecrets/commit/c7e9f7965ac2e93b93282549dc86c7fc01b8f85c)    
+Updated packages  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+## BREAKING CHANGES
+* **App:** Not compatible with version 1 - please see README
 <a name="1.1.6"></a>
 
 ## [1.1.6](https://github.com/mmpro/ac-awssecrets/compare/v1.1.5..v1.1.6) (2022-04-20 11:48:54)
