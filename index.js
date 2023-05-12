@@ -1,5 +1,4 @@
 const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
-const { fromIni } = require("@aws-sdk/credential-providers")
 
 const testConfig = require('./test/config')
 
@@ -32,17 +31,11 @@ const awsSecrets = () => {
 
 
   const functionName = 'ac-awsSecrets'.padEnd(15)
-  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, profile = process.env['profile'], testMode = 0, debug = false } = {}) => {
+  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, testMode = 0, debug = false } = {}) => {
     const environment = config?.environment || 'development'
 
     const awsConfig = {
       region: 'eu-central-1'
-    }
-    // credentials are determined from Lambda role.
-    // But you can also use a set profile 
-    if (profile) {
-      console.error('%s | Using AWS profile | %s', functionName, profile)
-      awsConfig.credentials = fromIni({ profile })
     }
     const client = new SecretsManagerClient(awsConfig)
 
