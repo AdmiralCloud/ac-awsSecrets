@@ -1,3 +1,13 @@
+<a name="2.0.1"></a>
+
+## [2.0.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.0..v2.0.1) (2023-05-12 16:00:19)
+
+
+### Bug Fix
+
+* **App:** Use AWS_PROFILE instead of profile | MP | [5b0c1ce8413d22a88de870ff46c080019c2d795e](https://github.com/admiralcloud/ac-awssecrets/commit/5b0c1ce8413d22a88de870ff46c080019c2d795e)    
+Use AWS_PROFILE and the built-in session management from AWS SDK  
+Related issues: [/issues#undefined](https://github.com//issues/undefined)
 <a name="2.0.0"></a>
  
 # [2.0.0](https://github.com/admiralcloud/ac-awssecrets/compare/v1.1.6..v2.0.0) (2023-02-26 11:45:48)
