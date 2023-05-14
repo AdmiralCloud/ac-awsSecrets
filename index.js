@@ -1,6 +1,7 @@
-const { SecretsManagerClient, GetSecretValueCommand } = require("@aws-sdk/client-secrets-manager");
+const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager')
+const customCredentialProvider = require('ac-aws-customcredentialprovider')
 
-const testConfig = require('./test/config')
+const testConfig = require('./test/config');
 
 /**
 * Replaces configuration variables with secrets
@@ -35,7 +36,8 @@ const awsSecrets = () => {
     const environment = config?.environment || 'development'
 
     const awsConfig = {
-      region: 'eu-central-1'
+      region: 'eu-central-1',
+      credentials: customCredentialProvider({ localDevelopment: config.localDevelopment, debug: true })
     }
     const client = new SecretsManagerClient(awsConfig)
 
