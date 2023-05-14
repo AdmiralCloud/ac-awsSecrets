@@ -1,3 +1,13 @@
+<a name="2.0.3"></a>
+
+## [2.0.3](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.2..v2.0.3) (2023-05-14 14:29:50)
+
+
+### Bug Fix
+
+* **App:** Typo fix | MP | [c370bd159b05051d81ba267f4b327e5a34560ef8](https://github.com/admiralcloud/ac-awssecrets/commit/c370bd159b05051d81ba267f4b327e5a34560ef8)    
+Typo fix  
+Related issues: [/issues#undefined](https://github.com//issues/undefined)
 <a name="2.0.2"></a>
 
 ## [2.0.2](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.1..v2.0.2) (2023-05-14 14:26:17)
