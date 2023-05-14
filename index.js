@@ -37,7 +37,7 @@ const awsSecrets = () => {
 
     const awsConfig = {
       region: 'eu-central-1',
-      credentials: customCredentialProvider({ localDevelopment: config.localDevelopment, debug: true })
+      credentials: customCredentialProvider({ localDevelopment: config.localDevelopment, debug })
     }
     const client = new SecretsManagerClient(awsConfig)
 
