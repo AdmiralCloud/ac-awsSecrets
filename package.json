@@ -6,7 +6,7 @@
   "version": "2.0.3",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.332.0",
-    "ac-aws-customcredentialprovider": "^0.1.0"
+    "ac-aws-customcredentialprovider": "^0.1.2"
   },
   "devDependencies": {
     "ac-semantic-release": "^0.4.1",

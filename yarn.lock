@@ -1079,10 +1079,10 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-ac-aws-customcredentialprovider@^0.1.0:
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/ac-aws-customcredentialprovider/-/ac-aws-customcredentialprovider-0.1.0.tgz#d1dcc8fed7d56f3db98a1fa8ecfccf05964658bc"
-  integrity sha512-2vnjGlH6J4XhzOfXmDfjZOFWUaNRQrU2U3yIHyn08sCCrvgJW0gal9CPIuRYfaALyCDqB/IvEV0SHmkm8oDKLA==
+ac-aws-customcredentialprovider@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/ac-aws-customcredentialprovider/-/ac-aws-customcredentialprovider-0.1.2.tgz#ec22b9f2b4f24e5f0f3a2b31b83254b2fce157ee"
+  integrity sha512-pZ7emSnKwlEe2ofWaduZg8W0XDTl51clB2efX4h/Ntg7ttsEUrHiYzzA/UD47aukxi0sudhsiDFT+Ju6xXdhFw==
   dependencies:
     "@aws-sdk/credential-providers" "^3.332.0"
 
