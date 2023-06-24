@@ -22,6 +22,7 @@ doc
 report.xml
 localtest.js
 .nyc_output
+**/coverage/**
 
 ########################
 # local config
