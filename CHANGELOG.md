@@ -1,3 +1,13 @@
+<a name="2.0.5"></a>
+
+## [2.0.5](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.4..v2.0.5) (2023-06-24 09:11:54)
+
+
+### Bug Fix
+
+* **App:** Package updates | MP | [f9797922cc5d0d82391197c3f26ef6ba4fedd74b](https://github.com/admiralcloud/ac-awssecrets/commit/f9797922cc5d0d82391197c3f26ef6ba4fedd74b)    
+Package updates and replaced nyc with c8.  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
 <a name="2.0.4"></a>
 
 ## [2.0.4](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.3..v2.0.4) (2023-05-14 17:20:29)
