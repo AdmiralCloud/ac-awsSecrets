@@ -5,13 +5,12 @@
   "repository": "admiralcloud/ac-awssecrets",
   "version": "2.0.5",
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.359.0",
-    "ac-aws-customcredentialprovider": "^0.1.3"
+    "@aws-sdk/client-secrets-manager": "^3.484.0"
   },
   "devDependencies": {
-    "ac-semantic-release": "^0.4.1",
-    "c8": "^8.0.0",
-    "chai": "^4.3.7",
+    "ac-semantic-release": "^0.4.2",
+    "c8": "^8.0.1",
+    "chai": "^5.0.0",
     "eslint": "8.x",
     "mocha": "^10.2.0"
   },
