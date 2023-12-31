@@ -1,3 +1,18 @@
+<a name="2.1.0"></a>
+ 
+# [2.1.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.5..v2.1.0) (2023-12-31 14:46:52)
+
+
+### Feature
+
+* **App:** Do not use custom credentialprovider | MP | [9556a0fb87e15c8d1242585373a706853384d796](https://github.com/admiralcloud/ac-awssecrets/commit/9556a0fb87e15c8d1242585373a706853384d796)    
+It does not seem to speed up the process to use custom credential provider. It can also create compatibility issues  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Chores
+
+* **App:** Updated packages | MP | [cd5c172c2ed8169f5927c4a7e6562b7a5a9b5899](https://github.com/admiralcloud/ac-awssecrets/commit/cd5c172c2ed8169f5927c4a7e6562b7a5a9b5899)    
+Updated packages  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
 <a name="2.0.5"></a>
 
 ## [2.0.5](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.4..v2.0.5) (2023-06-24 09:11:54)
