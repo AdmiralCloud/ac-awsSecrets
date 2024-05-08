@@ -61,6 +61,10 @@ describe('Reading secrets', () => {
     expect(config.configVar6).to.have.property('prop2', 'abc')
   })
 
+  it('Check non existing key - should fallback to existing value without error', async() => {
+    expect(config.configVar7).to.have.property('level', 'info')
+  })
+
   it('Check multisecrets', async() => {
     //console.log(50, config.aws.accessKeys)
     expect(config.aws.accessKeys).to.have.length(2)

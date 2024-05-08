@@ -19,6 +19,9 @@ const config = {
   },
   aws: {
     accessKeys: []
+  },
+  configVar7: {
+    level: 'info'
   }
 }
 
@@ -28,6 +31,7 @@ const secrets = [
   { key: 'configVar4', name: 'json' },
   { key: 'configVar5.path', name: 'path' },
   { key: 'configVar6', name: 'notExistingLocally' },
+  { key: 'configVar7', name: 'notExistingKey' },
 ]
 
 const availableSecrets = [{

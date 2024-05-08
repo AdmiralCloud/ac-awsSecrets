@@ -102,55 +102,56 @@ const awsSecrets = () => {
       for (const secret of secrets) {
         let existingValue = getKey(config, secret.key) || {}
         let value = secret?.value
-
-        // convert values
-        if (typeof value === 'object') {
-          Object.keys(value).forEach((key) => {
-            let val = value[key]
-            if (val === 'true') val = true
-            else if (val === 'false') val = false
-            else if (typeof val === 'string' && val.startsWith('JSON:')) {
-              try {
-                val = JSON.parse(val.substring(5))
+        if (value) {
+          // convert values
+          if (typeof value === 'object') {
+            Object.keys(value).forEach((key) => {
+              let val = value[key]
+              if (val === 'true') val = true
+              else if (val === 'false') val = false
+              else if (typeof val === 'string' && val.startsWith('JSON:')) {
+                try {
+                  val = JSON.parse(val.substring(5))
+                }
+                catch(e) {
+                  console.error('%s | %s | JSON could not be parsed %j', functionName, secret.name, val)
+                  throw new Error('invalidJSON')
+                }
               }
-              catch(e) {
-                console.error('%s | %s | JSON could not be parsed %j', functionName, secret.name, val)
-                throw new Error('invalidJSON')
-              }
-            }
-            value[key] = val
-          })
-        }
-
-        if (secret.servers) {
-          if (typeof secret.servers === 'boolean') {
-            let servers = existingValue?.servers || []
-            config[secret.key].servers = servers.map(server => {
-              if (server.server === secret.serverName) {
-                server = { ...server, ...value }
-              }
-              return server
+              value[key] = val
             })
           }
+
+          if (secret.servers) {
+            if (typeof secret.servers === 'boolean') {
+              let servers = existingValue?.servers || []
+              config[secret.key].servers = servers.map(server => {
+                if (server.server === secret.serverName) {
+                  server = { ...server, ...value }
+                }
+                return server
+              })
+            }
+            else {
+              // NEW NOTATION AS OBJECT
+              /* TODO: Probably not used anywhere, so legacy is ok
+              let match = {}
+              _.set(match, _.get(secret.servers, 'identifier'), _.get(secret.servers, 'value'))
+              existingValue = _.find(_.get(config, key, []), match)   
+              */
+            }
+          }
+          else if (secret?.type === 'arrayObject') {
+            existingValue.push(value)
+            setKey(config, secret.key, existingValue)
+          }
           else {
-            // NEW NOTATION AS OBJECT
-            /* TODO: Probably not used anywhere, so legacy is ok
-            let match = {}
-            _.set(match, _.get(secret.servers, 'identifier'), _.get(secret.servers, 'value'))
-            existingValue = _.find(_.get(config, key, []), match)   
-            */
+            if (Object.keys(existingValue).length === 0) {
+              setKey(config, secret.key, {})
+            }
+            existingValue = { ...existingValue, ...value }
+            setKey(config, secret.key, existingValue)
           }
-        }
-        else if (secret?.type === 'arrayObject') {
-          existingValue.push(value)
-          setKey(config, secret.key, existingValue)
-        }
-        else {
-          if (Object.keys(existingValue).length === 0) {
-            setKey(config, secret.key, {})
-          }
-          existingValue = { ...existingValue, ...value }
-          setKey(config, secret.key, existingValue)
         }
 
         if (secret?.log || debug) {
