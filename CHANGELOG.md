@@ -1,3 +1,18 @@
+<a name="2.1.1"></a>
+
+## [2.1.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.1.0..v2.1.1) (2024-05-08 13:44:22)
+
+
+### Bug Fix
+
+* **App:** Only set value from secret, if secret exists | MP | [ab1b8e87bd1e35c7eb4428c1aa90ad9a93597d9e](https://github.com/admiralcloud/ac-awssecrets/commit/ab1b8e87bd1e35c7eb4428c1aa90ad9a93597d9e)    
+Only set value from secret, if secret exists  
+Related issues: [undefined/undefined#master](undefined/browse/master)
+### Chores
+
+* **App:** Updated packages | MP | [57d506749cbcad5372c84952a8e7929dd62dca37](https://github.com/admiralcloud/ac-awssecrets/commit/57d506749cbcad5372c84952a8e7929dd62dca37)    
+Updated packages  
+Related issues: [undefined/undefined#master](undefined/browse/master)
 <a name="2.1.0"></a>
  
 # [2.1.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.0.5..v2.1.0) (2023-12-31 14:46:52)
