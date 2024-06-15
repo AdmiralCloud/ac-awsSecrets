@@ -133,7 +133,7 @@ describe('Check errors', () => {
 describe('Misc', () => {
   var hook
   beforeEach(function(){
-    hook = captureStream(process.stdout)
+    hook = captureStream(process.stderr)
   })
   afterEach(function(){
     hook.unhook()
