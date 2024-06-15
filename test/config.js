@@ -25,6 +25,51 @@ const config = {
   }
 }
 
+
+// AWS PARAMETER STORE
+const secretParameters = [
+  { name: 'configVar1', json: true },
+  { name: 'configVar2', json: true, array: true, path: 'configVar2.servers', property: { server: 'cacheRead' } },
+  { name: 'configVar4/api', json: true },
+  { name: 'configVar5.path', json: true },
+  { name: 'configVar6', json: true },
+]
+
+const parameterStore = [
+  { name: '/test/configVar1', value: JSON.stringify({ c1: true, c2: 123, c3: 'abc' }) },
+  {
+    name: '/test/configVar2',
+    value: JSON.stringify({
+      port: 6360,
+      host: 'myRedisHost'
+    })
+  },
+  {
+    name: '/test/configVar3',
+  }, 
+  {
+    name: '/test/configVar4/api',
+    value: JSON.stringify({ "url":"https://api.admiralcloud.com" })
+  },
+  {
+    name: '/test/errorVar1',
+    value: 'JSON:abc',
+  },
+  {
+    name: '/test/configVar5.path',
+    value: JSON.stringify({ cookie: true })
+  },
+  {
+    name: '/test/configVar6',
+    value: JSON.stringify({
+      prop1: 123,
+      prop2: 'abc'
+    })
+  },
+]
+
+
+// AWS SECRETS 
 const secrets = [
   { key: 'configVar1', name: 'simple' },
   { key: 'configVar2', name: 'server', servers: true, serverName: 'cacheRead' },
@@ -33,6 +78,8 @@ const secrets = [
   { key: 'configVar6', name: 'notExistingLocally' },
   { key: 'configVar7', name: 'notExistingKey' },
 ]
+
+
 
 const availableSecrets = [{
   key: 'configVar1',
@@ -126,6 +173,8 @@ const multisecretsFail = [
 
 module.exports = {
   config,
+  parameterStore,
+  secretParameters,
   availableSecrets,
   multisecretsFail,
   secrets,

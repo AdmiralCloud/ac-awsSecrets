@@ -1,6 +1,8 @@
 const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager')
+const { SSMClient, GetParameterCommand } = require("@aws-sdk/client-ssm")
 
-const testConfig = require('./test/config');
+const testConfig = require('./test/config')
+const functionName = 'ac-awsSecrets'.padEnd(15)
 
 /**
 * Replaces configuration variables with secrets
@@ -29,13 +31,104 @@ const awsSecrets = () => {
         : setKey(obj[head], rest.join('.'), value)
   }
 
+  const setValue = (config, { path, value, array = false, property }) => {
+    // path can be from AWS parametes store (/a/b/c) or a real JSON path (a.b.c)    
+    const keys = path.includes('/') ? path.split('/').filter(Boolean) : path.split('.')
+    const lastKey = keys.pop()
+    let pointer = config
+  
+    for (const key of keys) {
+      if (!pointer[key]) {
+        pointer[key] = {}
+      }
+      pointer = pointer[key]
+    }
+  
+    if (array) {
+      if (!Array.isArray(pointer[lastKey])) {
+        pointer[lastKey] = []
+      }
+      if (property) {
+        const [propKey, propValue] = Object.entries(property)[0]
+        const index = pointer[lastKey].findIndex(item => item[propKey] === propValue)
+  
+        if (index !== -1) {
+          if (typeof value !== 'object' || Array.isArray(value)) {
+            throw new Error("Value must be an object when replacing an entry in the array.")
+          }
+          // Merge existing properties with new ones
+          pointer[lastKey][index] = { ...pointer[lastKey][index], ...value }
+        } 
+        else {
+          pointer[lastKey].push(value)
+        }
+      } 
+      else {
+        pointer[lastKey].push(value)
+      }
+    } 
+    else {
+      pointer[lastKey] = value
+    }
+  }
+  
 
-  const functionName = 'ac-awsSecrets'.padEnd(15)
-  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, testMode = 0, debug = false } = {}) => {
+
+  const loadSecretParameters = async({ secretParameters = [], config = {}, testMode = 0, debug = false, region = 'eu-central-1' } = {}) => {
+    const environment = config?.environment || process.env.NODE_ENV || 'development'
+
+    const awsConfig = {
+      region
+    }
+    const ssmClient = new SSMClient(awsConfig)
+
+    const getSecretParameter = async({ name, json = false, array = false, path, property, debug }) => {
+      const parameterName = `/${environment}/${name}`
+      try {
+        let value
+        if (testMode === 3) {
+          // fetch from availableSecrets
+          let found = testConfig.parameterStore.find(item => item.name === parameterName)
+          value = found?.value
+        }
+        else {
+          const command = new GetParameterCommand({
+            Name: parameterName,
+            WithDecryption: true,
+          })
+      
+          // Send the command to retrieve the parameter
+          const response = await ssmClient.send(command)
+          value = response?.Parameter?.Value
+        }
+
+        // Extract and return the parameter value
+        if (json) {
+          value = JSON.parse(value)
+        }
+
+        if (debug) {
+          console.warn('P %s | T %s | V %j', parameterName, typeof value, value)
+        }
+        setValue(config, { path: (path || name), value, array, property })
+
+      } 
+      catch (e) {
+        console.error('%s | %s | %s', functionName, parameterName, e?.message)
+      }
+    }
+
+    for (const secretParameter of secretParameters) {
+      await getSecretParameter(secretParameter)
+    }
+  }
+
+
+  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, testMode = 0, debug = false, region = 'eu-central-1' } = {}) => {
     const environment = config?.environment || 'development'
 
     const awsConfig = {
-      region: 'eu-central-1'
+      region
     }
     const client = new SecretsManagerClient(awsConfig)
 
@@ -155,13 +248,14 @@ const awsSecrets = () => {
         }
 
         if (secret?.log || debug) {
-          console.log('%s | %s | %j', functionName, secret?.name, existingValue)
+          console.warn('%s | %s | %j', functionName, secret?.name, existingValue)
         }
       }
     }  
   }
 
   return {
+    loadSecretParameters,
     loadSecrets
   }
 }

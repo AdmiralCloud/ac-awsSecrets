@@ -1,6 +1,8 @@
 # AC AWS Secrets
 Reads secrets from AWS secrets manager and adds them to the configuration of the embedding app.
 
+Instead of AWS secrets, you can now also use AWS parameter store (which is not as expensive as AWS secrets)
+
 ![example workflow](https://github.com/admiralcloud/ac-awssecrets/actions/workflows/node.js.yml/badge.svg)
 
 
@@ -9,7 +11,69 @@ Reads secrets from AWS secrets manager and adds them to the configuration of the
 + async/await - no callback!
 + uses AWS IAM roles or AWS IAM profiles instead of IAM credentials
 
-# Parameters
+# AWS Parameter Store
+Using parameter store is a less expensive and gives you more flexibility in handling password and other configurations that should not be hardcoded.
+
+## Usage of AWS parmeters
+When you create your parameters in AW parameter store, use the following structure:
+```
+/ENVIRONMENT/CONFIG_PATH[/...]
+```
+
+The script will replace configuration properties based on the path. See example for more information:
+```
+// your app's example configuration
+const config = {
+  http: {
+    port: 8080
+  },
+  database: {
+    servers: [
+      { server: 'mainDB' } 
+    ]
+  }
+}
+
+// AWS parameters (values must be stored as strigified JSON)
+/development/http -> { port: 8090 }
+/development/database -> { host: 'awsAurora', port: 3306 }:
+
+// function payload
+const payload = {
+  secretParameters: [ 
+    { name: 'http', json: true },
+    { name: 'database', json: true, array: true, property: { server: 'mainDB' }}
+  ],
+  config
+}
+await awsSecrets.loadSecretParameters(payload)
+
+// result
+const config = {
+  http: {
+    port: 8090
+  },
+  database: {
+    servers: [
+      { server: 'mainDB', host: 'awsAurora', port: 3306 } 
+    ]
+  }
+}
+
+```
+
+## Options
+|Parameter|Type|Required|Description|
+|---|---|---|---|
+|name|string|yes|name of the parameter (without environment) (and property in config)
+|path|string|-|If your config property does not match name, you can specify the path
+|json|boolean|-|If true, the parameter value will be parsed as JSON
+|array|boolean|-|If true, the the value will be pushed to the array at name or path
+|property|object|-|If set, instead of pushing the value to an array it will inserted at the object which matches the property 
+
+
+# AWS Secrets
+## Parameters
 |Parameter|Type|Required|Description|
 |---|---|---|---|
 |key|string|yes|the local variable name|
@@ -17,12 +81,12 @@ Reads secrets from AWS secrets manager and adds them to the configuration of the
 |servers|bool|-|See below
 |valueHasJSON|bool|-|If true, some properties have JSON content (prefixed with JSON:)
 
-# Usage
+## Usage
 AWS secret is a JSON object. Those properties will be merged with local config properties based on the secret's name.
 
-## Secret
+### Secret
 
-### Store secret in AWS
+#### Store secret in AWS
 ```
 Example secret
 // name: mySecret1
@@ -33,7 +97,7 @@ Example secret
 }
 ```
 
-### Configure a local variable, that should be enhanced with the secret
+#### Configure a local variable, that should be enhanced with the secret
 ```
 const config = {
   key1: {},
@@ -43,7 +107,7 @@ const config = {
 }
 ```
 
-### Fetch secrets
+#### Fetch secrets
 ```
 const secrets = [
   { key: 'key1', name: 'mySecret1' } // key is the config var, name is the AWS secret name
@@ -64,10 +128,10 @@ const config = {
 
 ```
 
-## Multisecrets
+### Multisecrets
 Use multisecrets if you want to add a number of additional secrets to be fetched. Usually it is used to fetch multiple objects for an array of objects:
 
-### Store multisecret in AWS
+#### Store multisecret in AWS
 ```
 Example secret
 // name: mySecret2
@@ -76,7 +140,7 @@ Example secret
 }
 ```
 
-### Store secrets in AWS 
+#### Store secrets in AWS 
 ```
 // name: aws.key1
 {
@@ -91,7 +155,7 @@ Example secret
 }
 ```
 
-### Configure a local variable, that should be enhanced with the secret
+#### Configure a local variable, that should be enhanced with the secret
 ```
 const config = {
   mySecret2: [],
@@ -101,7 +165,7 @@ const config = {
 }
 ```
 
-### Fetch secrets
+#### Fetch secrets
 ```
 const multisecrets = [
   { key: 'mySecret2', name: 'mySecret2' } // key is the config var, name is the AWS secret name
@@ -217,9 +281,8 @@ awsSecrets.loadSecrets(secretParams, (err, result) => {
 
 ```
 
-## Links
+# Links
 - [Website](https://www.admiralcloud.com/)
-- [Facebook](https://www.facebook.com/MediaAssetManagement/)
 
-## License
+# License
 [MIT License](https://opensource.org/licenses/MIT) Copyright © 2009-present, AdmiralCloud AG, Mark Poepping

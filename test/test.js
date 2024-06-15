@@ -9,6 +9,9 @@ const multisecrets = testConfig?.multisecrets
 const config = testConfig.config
 let secrets = testConfig.secrets
 
+const parameterStore = testConfig.parameterStore
+let secretParameters = testConfig.secretParameters
+
 // HELPER for console.log checks
 const captureStream = (stream) => {
   let oldWrite = stream.write
@@ -27,6 +30,44 @@ const captureStream = (stream) => {
     }
   }
 }
+
+describe('Reading secretParameters', () => {
+  it('Read secretParameters', async() => {
+    await awsSecrets.loadSecretParameters({ secretParameters, config, testMode: 3 })
+  })
+
+  it('Check configVar1', async() => {
+    const expected = parameterStore.find(item => item.name === '/test/configVar1')
+    expected.value = JSON.parse(expected.value)
+    expect(config.configVar1).to.have.property('c1', true)
+    expect(config.configVar1).to.have.property('c2', expected.value.c2)
+    expect(config.configVar1).to.have.property('c3', expected.value.c3)
+
+  })
+
+  it('Check server', async() => {
+    const expected = testConfig.parameterStore.find(item => item.name === '/test/configVar2');
+    expected.value = JSON.parse(expected.value);
+    expect(config.configVar2.servers[0]).to.have.property('port', expected.value.port);
+  })
+
+  it('Check JSON', async() => {
+    expect(config.configVar4.api).to.have.property('url', 'https://api.admiralcloud.com')
+  })
+
+  it('Check path', async() => {
+    expect(config.configVar5.path).to.have.property('cookie', true)
+  })
+
+  it('Check non existing local config', async() => {
+    expect(config.configVar6).to.have.property('prop1', 123)
+    expect(config.configVar6).to.have.property('prop2', 'abc')
+  })
+
+  it('Check non existing key - should fallback to existing value without error', async() => {
+    expect(config.configVar7).to.have.property('level', 'info')
+  })
+})
 
 
 describe('Reading secrets', () => {
