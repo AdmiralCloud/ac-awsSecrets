@@ -1,3 +1,29 @@
+<a name="2.2.0"></a>
+ 
+# [2.2.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.1.1..v2.2.0) (2024-07-15 08:04:33)
+
+
+### Feature
+
+* **App:** Support for AWS parameter store | MP | [a8427d5086ec1eaaf675c27f04e276ef2f630c17](https://github.com/admiralcloud/ac-awssecrets/commit/a8427d5086ec1eaaf675c27f04e276ef2f630c17)    
+In addition to AWS secrets you can now also use AWS parameter store  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Tests
+
+* **App:** Fixed tests | MP | [91a21ccede855ee63e2bc15becec9839f3f9702a](https://github.com/admiralcloud/ac-awssecrets/commit/91a21ccede855ee63e2bc15becec9839f3f9702a)    
+Fixed tests  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+### Chores
+
+* **App:** Updated packages | MP | [2ed4f507784e6d03c44a9c98a279560550fb00d4](https://github.com/admiralcloud/ac-awssecrets/commit/2ed4f507784e6d03c44a9c98a279560550fb00d4)    
+Updated packages  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+* **App:** Updated packages | MP | [0086c4ba8ac53b1527c33a68ba2e1e776b1f2111](https://github.com/admiralcloud/ac-awssecrets/commit/0086c4ba8ac53b1527c33a68ba2e1e776b1f2111)    
+Updated packages  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
+* **App:** Updated packages | MP | [11c0754761401652d0f9ff7070e9265475bfe624](https://github.com/admiralcloud/ac-awssecrets/commit/11c0754761401652d0f9ff7070e9265475bfe624)    
+Updated packages  
+Related issues: [undefined/undefined#develop](undefined/browse/develop)
 <a name="2.1.1"></a>
 
 ## [2.1.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.1.0..v2.1.1) (2024-05-08 13:44:22)
