@@ -5,15 +5,15 @@
   "repository": "admiralcloud/ac-awssecrets",
   "version": "2.2.0",
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.614.0",
-    "@aws-sdk/client-ssm": "^3.614.0"
+    "@aws-sdk/client-secrets-manager": "^3.624.0",
+    "@aws-sdk/client-ssm": "^3.624.0"
   },
   "devDependencies": {
     "ac-semantic-release": "^0.4.2",
     "c8": "^10.1.2",
     "chai": "^4.x",
     "eslint": "9.x",
-    "mocha": "^10.6.0"
+    "mocha": "^10.7.3"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha --reporter spec",
