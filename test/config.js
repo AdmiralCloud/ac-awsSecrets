@@ -18,6 +18,7 @@ const config = {
     }
   },
   aws: {
+    account: '123',
     accessKeys: []
   },
   configVar7: {
@@ -33,6 +34,7 @@ const secretParameters = [
   { name: 'configVar4/api', json: true },
   { name: 'configVar5.path', json: true },
   { name: 'configVar6', json: true },
+  { name: 'aws', json: true, merge: true }
 ]
 
 const parameterStore = [
@@ -66,6 +68,12 @@ const parameterStore = [
       prop2: 'abc'
     })
   },
+  {
+    name: '/test/aws',
+    value: JSON.stringify({
+      account: '456'
+    })
+  }
 ]
 
 

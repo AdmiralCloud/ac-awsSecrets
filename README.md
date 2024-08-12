@@ -59,6 +59,34 @@ const config = {
     ]
   }
 }
+```
+```
+// example with merge = true
+const config = {
+  aws: {
+    account: 123,
+    s3: {
+      region: 'eu-central-1'
+    }
+  }
+}
+
+/development/aws -> { account: 456 }
+const payload = {
+  secretParameters: [ 
+    { name: 'aws', json: true, merge: true },
+  ],
+  config
+}
+await awsSecrets.loadSecretParameters(payload)
+
+// final result
+config.aws = {
+  account: 456,
+  s3: {
+    region: 'eu-central-1'
+  }
+}
 
 ```
 
@@ -70,6 +98,7 @@ const config = {
 |json|boolean|-|If true, the parameter value will be parsed as JSON
 |array|boolean|-|If true, the the value will be pushed to the array at name or path
 |property|object|-|If set, instead of pushing the value to an array it will inserted at the object which matches the property 
+|merge|boolean|-|If true, objects from AWS parameters will be merged with existing objects
 
 
 # AWS Secrets

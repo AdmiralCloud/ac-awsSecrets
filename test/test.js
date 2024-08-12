@@ -67,6 +67,12 @@ describe('Reading secretParameters', () => {
   it('Check non existing key - should fallback to existing value without error', async() => {
     expect(config.configVar7).to.have.property('level', 'info')
   })
+  
+
+  it('Check merge config', async() => {
+    expect(config.aws).to.have.property('account', '456')
+    expect(config.aws).to.have.property('accessKeys').length(0)
+  })
 })
 
 

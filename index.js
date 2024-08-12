@@ -31,7 +31,7 @@ const awsSecrets = () => {
         : setKey(obj[head], rest.join('.'), value)
   }
 
-  const setValue = (config, { path, value, array = false, property }) => {
+  const setValue = (config, { path, value, array = false, property, merge = false }) => {
     // path can be from AWS parametes store (/a/b/c) or a real JSON path (a.b.c)    
     const keys = path.includes('/') ? path.split('/').filter(Boolean) : path.split('.')
     const lastKey = keys.pop()
@@ -68,7 +68,12 @@ const awsSecrets = () => {
       }
     } 
     else {
-      pointer[lastKey] = value
+      if (merge && typeof pointer[lastKey] === 'object' && !Array.isArray(pointer[lastKey]) && typeof value === 'object' && !Array.isArray(value)) {
+        pointer[lastKey] = { ...pointer[lastKey], ...value }
+      }
+      else {
+        pointer[lastKey] = value
+      }
     }
   }
   
@@ -82,7 +87,7 @@ const awsSecrets = () => {
     }
     const ssmClient = new SSMClient(awsConfig)
 
-    const getSecretParameter = async({ name, json = false, array = false, path, property, debug }) => {
+    const getSecretParameter = async({ name, json = false, array = false, path, property, debug, merge }) => {
       const parameterName = `/${environment}/${name}`
       try {
         let value
@@ -110,7 +115,7 @@ const awsSecrets = () => {
         if (debug) {
           console.warn('P %s | T %s | V %j', parameterName, typeof value, value)
         }
-        setValue(config, { path: (path || name), value, array, property })
+        setValue(config, { path: (path || name), value, array, property, merge })
 
       } 
       catch (e) {
