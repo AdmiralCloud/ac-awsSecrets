@@ -1,3 +1,18 @@
+<a name="2.3.0"></a>
+ 
+# [2.3.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.2.1..v2.3.0) (2024-08-12 10:04:48)
+
+
+### Feature
+
+* **App:** Add option to merge AWS parameters with config | MP | [e000f4b824a44c39f2b4b99c8b20440fefd80fb3](https://github.com/admiralcloud/ac-awssecrets/commit/e000f4b824a44c39f2b4b99c8b20440fefd80fb3)    
+Add option to merge AWS parameters with config instead of overwriting (default)  
+Related issues: [undefined/undefined#master](undefined/browse/master)
+### Chores
+
+* **App:** Updated packages | MP | [286853f0f9bd9a4456e6b52e79027d7afa645fd5](https://github.com/admiralcloud/ac-awssecrets/commit/286853f0f9bd9a4456e6b52e79027d7afa645fd5)    
+Updated packages  
+Related issues: [undefined/undefined#master](undefined/browse/master)
 <a name="2.2.1"></a>
 
 ## [2.2.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.2.0..v2.2.1) (2024-08-09 15:10:41)
