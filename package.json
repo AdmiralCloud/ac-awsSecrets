@@ -6,7 +6,7 @@
   "version": "2.2.1",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.624.0",
-    "@aws-sdk/client-ssm": "^3.624.0"
+    "@aws-sdk/client-ssm": "^3.628.0"
   },
   "devDependencies": {
     "ac-semantic-release": "^0.4.2",
