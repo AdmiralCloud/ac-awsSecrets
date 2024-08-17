@@ -1,3 +1,18 @@
+<a name="2.3.1"></a>
+
+## [2.3.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.3.0..v2.3.1) (2024-08-17 10:57:27)
+
+
+### Bug Fix
+
+* **App:** Add ignoreInTestmode for secret params | MP | [0065e17890c41d01a2ce47a302ce9f2a818cbce3](https://github.com/admiralcloud/ac-awssecrets/commit/0065e17890c41d01a2ce47a302ce9f2a818cbce3)    
+If ignoreInTestmode is true in testmode, the secret parameter is not fetched.  
+Related issues: [undefined/undefined#master](undefined/browse/master)
+### Chores
+
+* **App:** Updated packages | MP | [53c458370aba20b633b7ebe33ab3e026bc95a133](https://github.com/admiralcloud/ac-awssecrets/commit/53c458370aba20b633b7ebe33ab3e026bc95a133)    
+Updated packages  
+Related issues: [undefined/undefined#master](undefined/browse/master)
 <a name="2.3.0"></a>
  
 # [2.3.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.2.1..v2.3.0) (2024-08-12 10:04:48)
