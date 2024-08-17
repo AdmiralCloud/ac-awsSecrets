@@ -79,7 +79,7 @@ const awsSecrets = () => {
   
 
 
-  const loadSecretParameters = async({ secretParameters = [], config = {}, testMode = 0, debug = false, region = 'eu-central-1' } = {}) => {
+  const loadSecretParameters = async({ secretParameters = [], config = {}, testMode = 0, debug = false, throwError = false, region = 'eu-central-1' } = {}) => {
     const environment = config?.environment || process.env.NODE_ENV || 'development'
 
     const awsConfig = {
@@ -120,6 +120,7 @@ const awsSecrets = () => {
       } 
       catch (e) {
         console.error('%s | %s | %s', functionName, parameterName, e?.message)
+        if (throwError) throw e
       }
     }
 
