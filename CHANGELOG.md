@@ -1,3 +1,13 @@
+<a name="2.3.2"></a>
+
+## [2.3.2](https://github.com/admiralcloud/ac-awssecrets/compare/v2.3.1..v2.3.2) (2024-08-17 11:07:03)
+
+
+### Bug Fix
+
+* **App:** Add option to throw error | MP | [ad5cac4088a0f6c921843662d600e6afdb5231c0](https://github.com/admiralcloud/ac-awssecrets/commit/ad5cac4088a0f6c921843662d600e6afdb5231c0)    
+Errors from AWS are caught and logged. With the new throwError option you can throw the error.  
+Related issues: [undefined/undefined#master](undefined/browse/master)
 <a name="2.3.1"></a>
 
 ## [2.3.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.3.0..v2.3.1) (2024-08-17 10:57:27)
