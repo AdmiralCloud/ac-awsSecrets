@@ -126,6 +126,7 @@ const awsSecrets = () => {
 
     for (const secretParameter of secretParameters) {
       if (environment === 'test' && secretParameter?.ignoreInTestMode) continue
+      if (debug) secretParameter.debug = true
       await getSecretParameter(secretParameter)
     }
   }
