@@ -1,3 +1,18 @@
+<a name="2.4.0"></a>
+ 
+# [2.4.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.3.3..v2.4.0) (2024-10-18 13:41:05)
+
+
+### Feature
+
+* **App:** Allow retrieving paramters by path | MP | [3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed](https://github.com/admiralcloud/ac-awssecrets/commit/3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed)    
+You can fetch and add multiple parameter from they same path with one entry. See README for example  
+Related issues: [undefined/undefined#master](undefined/browse/master)
+### Chores
+
+* **App:** Updated packages | MP | [52502906bf6f1071d8e896f34139f865eac3559b](https://github.com/admiralcloud/ac-awssecrets/commit/52502906bf6f1071d8e896f34139f865eac3559b)    
+Updated packages  
+Related issues: [undefined/undefined#master](undefined/browse/master)
 <a name="2.3.3"></a>
 
 ## [2.3.3](https://github.com/admiralcloud/ac-awssecrets/compare/v2.3.2..v2.3.3) (2024-09-28 08:08:07)
