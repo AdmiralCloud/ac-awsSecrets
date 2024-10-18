@@ -23,7 +23,8 @@ const config = {
   },
   configVar7: {
     level: 'info'
-  }
+  },
+  db: []
 }
 
 
@@ -34,7 +35,8 @@ const secretParameters = [
   { name: 'configVar4/api', json: true },
   { name: 'configVar5.path', json: true },
   { name: 'configVar6', json: true },
-  { name: 'aws', json: true, merge: true }
+  { name: 'aws', json: true, merge: true },
+  { name: 'db/*', json: true, merge: true, path: 'db' }
 ]
 
 const parameterStore = [
@@ -73,7 +75,15 @@ const parameterStore = [
     value: JSON.stringify({
       account: '456'
     })
-  }
+  },
+  {
+    name: '/test/db/1',
+    value: JSON.stringify({ url: 'https://db1.admiralcloud.com' }),
+  },
+  {
+    name: '/test/db/2',
+    value: JSON.stringify({ url: 'https://db2.admiralcloud.com' }),
+  },
 ]
 
 

@@ -1,5 +1,5 @@
 const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager')
-const { SSMClient, GetParameterCommand } = require("@aws-sdk/client-ssm")
+const { SSMClient, GetParameterCommand, GetParametersByPathCommand } = require("@aws-sdk/client-ssm")
 
 const testConfig = require('./test/config')
 const functionName = 'ac-awsSecrets'.padEnd(15)
@@ -78,7 +78,6 @@ const awsSecrets = () => {
   }
   
 
-
   const loadSecretParameters = async({ secretParameters = [], config = {}, testMode = 0, debug = false, throwError = false, region = 'eu-central-1' } = {}) => {
     const environment = config?.environment || process.env.NODE_ENV || 'development'
 
@@ -94,7 +93,7 @@ const awsSecrets = () => {
         if (testMode === 3) {
           // fetch from availableSecrets
           let found = testConfig.parameterStore.find(item => item.name === parameterName)
-          value = found?.value
+          value = found?.value         
         }
         else {
           const command = new GetParameterCommand({
@@ -124,10 +123,64 @@ const awsSecrets = () => {
       }
     }
 
+    // pushes multiple paramters into the given path (e.g. params /dev/db/1 and /dev/db/2 (name = /dev/db/*) will be objects in array databases (path))
+    const getSecretParametersByPath = async({ name, json = false, array = true, path, property, debug, merge }) => {
+      if (!path) throw new Error('pathMustBeSet')
+      const parameterName = `/${environment}/${name}`
+      try {
+        let valueArray
+        if (testMode === 3) {
+          // fetch from availableSecrets
+          valueArray = testConfig.parameterStore.filter(item => {
+            return item.name.startsWith(parameterName.replace('*', ''))
+          })
+          valueArray = valueArray.map(item => {
+            return {
+              Name: item?.name,
+              Type: 'SecureString',
+              Value: item?.value,
+              Version: 1,
+              LastModifiedDate: new Date(),
+              ARN: `arn:aws:ssm:region:account-id:parameter/${item?.name}`,
+              DataType: 'text'
+            }
+          })
+        }        
+        else {
+          // fetch all paramters with the path
+          const command = new GetParametersByPathCommand({
+            Path: parameterName.replace('*', ''),
+            Recursive: true,
+            WithDecryption: true,
+          })
+          const response = await ssmClient.send(command)
+          valueArrays = response?.Parameters
+        }
+
+        for (const item of valueArray) {
+          let value = item?.Value
+          // Extract and return the parameter value
+          if (json) {
+            value = JSON.parse(value)
+          }
+
+          if (debug) {
+            console.warn('P %s | T %s | V %j', item?.Name, typeof value, value)
+          }
+          setValue(config, { path, value, array, property, merge })
+        }
+      } 
+      catch (e) {
+        console.error('%s | %s | %s', functionName, parameterName, e?.message)
+        if (throwError) throw e
+      }
+    }
+
     for (const secretParameter of secretParameters) {
       if (environment === 'test' && secretParameter?.ignoreInTestMode) continue
       if (debug) secretParameter.debug = true
-      await getSecretParameter(secretParameter)
+      if (secretParameter.name.endsWith('*')) await getSecretParametersByPath(secretParameter)
+      else await getSecretParameter(secretParameter)
     }
   }
 

@@ -88,6 +88,24 @@ config.aws = {
   }
 }
 
+// USE WITH PATH
+/development/db1 -> { url: 'https://db1.admiralcloud.com' }
+/development/db2 -> { url: 'https://db2.admiralcloud.com' }
+
+const payload = {
+  secretParameters: [ 
+    { name: 'db/*', path: 'database', json: true, merge: true },
+  ],
+  config
+}
+await awsSecrets.loadSecretParameters(payload)
+
+// final result
+config.database = [
+  { url: 'https://db1.admiralcloud.com' },
+  { url: 'https://db2.admiralcloud.com' }
+]
+
 ```
 
 ## Options
@@ -99,6 +117,7 @@ config.aws = {
 |array|boolean|-|If true, the the value will be pushed to the array at name or path
 |property|object|-|If set, instead of pushing the value to an array it will inserted at the object which matches the property 
 |merge|boolean|-|If true, objects from AWS parameters will be merged with existing objects
+|ignoreInTestMode|boolean|-|If true, parameter will be ignored if environment is test
 
 
 # AWS Secrets

@@ -73,6 +73,12 @@ describe('Reading secretParameters', () => {
     expect(config.aws).to.have.property('account', '456')
     expect(config.aws).to.have.property('accessKeys').length(0)
   })
+
+  it('Check path secrets', async() => {
+    expect(config.db).to.have.length(2)
+    expect(config.db[0]).to.have.property('url', 'https://db1.admiralcloud.com')
+    expect(config.db[1]).to.have.property('url', 'https://db2.admiralcloud.com')
+  })
 })
 
 
