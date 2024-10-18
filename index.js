@@ -154,7 +154,7 @@ const awsSecrets = () => {
             WithDecryption: true,
           })
           const response = await ssmClient.send(command)
-          valueArrays = response?.Parameters
+          valueArray = response?.Parameters
         }
 
         for (const item of valueArray) {
