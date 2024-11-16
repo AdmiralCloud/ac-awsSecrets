@@ -31,6 +31,19 @@ const awsSecrets = () => {
         : setKey(obj[head], rest.join('.'), value)
   }
 
+  const deepMerge = (target, source) => {
+    const result = { ...target }
+    for (const key in source) {
+      if (typeof source[key] === 'object' && !Array.isArray(source[key]) && typeof result[key] === 'object' && !Array.isArray(result[key])) {
+        result[key] = deepMerge(result[key], source[key])
+      } 
+      else {
+        result[key] = source[key]
+      }
+    }
+    return result
+  }
+
   const setValue = (config, { path, value, array = false, property, merge = false }) => {
     // path can be from AWS parametes store (/a/b/c) or a real JSON path (a.b.c)    
     const keys = path.includes('/') ? path.split('/').filter(Boolean) : path.split('.')
@@ -69,7 +82,7 @@ const awsSecrets = () => {
     } 
     else {
       if (merge && typeof pointer[lastKey] === 'object' && !Array.isArray(pointer[lastKey]) && typeof value === 'object' && !Array.isArray(value)) {
-        pointer[lastKey] = { ...pointer[lastKey], ...value }
+        pointer[lastKey] = deepMerge(pointer[lastKey], value)  // Use deepMerge instead of spread
       }
       else {
         pointer[lastKey] = value
