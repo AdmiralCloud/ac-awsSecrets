@@ -1,3 +1,13 @@
+<a name="2.4.2"></a>
+
+## [2.4.2](https://github.com/admiralcloud/ac-awssecrets/compare/v2.4.1..v2.4.2) (2024-11-16 15:52:33)
+
+
+### Bug Fix
+
+* **App:** Deep merge parameters | MP | [ba51f27d9f9723dcdbd4ad265ba5f359a4048456](https://github.com/admiralcloud/ac-awssecrets/commit/ba51f27d9f9723dcdbd4ad265ba5f359a4048456)    
+If merge is true, make sure to deep merge objects  
+Related issues: [undefined/undefined#master](undefined/browse/master)
 <a name="2.4.1"></a>
 
 ## [2.4.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.4.0..v2.4.1) (2024-10-18 13:50:58)
