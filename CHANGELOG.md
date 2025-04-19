@@ -1,3 +1,12 @@
+
+## [2.4.3](https://github.com/admiralcloud/ac-awssecrets/compare/v2.4.2..v2.4.3) (2025-04-19 18:41:08)
+
+
+### Bug Fix
+
+* **App:** Package update | MP | [2c47ae14297e0b007deff0264e383a59c3dd2476](https://github.com/admiralcloud/ac-awssecrets/commit/2c47ae14297e0b007deff0264e383a59c3dd2476)    
+Package updates  
+Related issues:
 <a name="2.4.2"></a>
 
 ## [2.4.2](https://github.com/admiralcloud/ac-awssecrets/compare/v2.4.1..v2.4.2) (2024-11-16 15:52:33)
