@@ -3,7 +3,7 @@
   "author": "Mark Poepping (https://www.admiralcloud.com)",
   "license": "MIT",
   "repository": "admiralcloud/ac-awssecrets",
-  "version": "2.4.3",
+  "version": "2.4.4",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.787.0",
     "@aws-sdk/client-ssm": "^3.787.0"
