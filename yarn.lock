@@ -1015,10 +1015,10 @@
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-9.0.8.tgz#7545ba4fc3c003d6c756f651f3bf163d8f0f29ba"
   integrity sha512-jg+97EGIcY9AGHJJRaaPVgetKDsrTgbRjQ5Msgjh/DQKEFl0DtyRr/VCOyD1T2R1MNeWPK/u7JoGhlDZnKBAfA==
 
-ac-semantic-release@^0.4.5:
-  version "0.4.5"
-  resolved "https://registry.yarnpkg.com/ac-semantic-release/-/ac-semantic-release-0.4.5.tgz#071cecad3e47a50c16d1f6c29def7587fc4cf265"
-  integrity sha512-BCqC4+/HvFi0njH9RTQ2XsjxF6nlf/jX0v5ED2LPCTUZf2Bf2fVpVoqEIv5tsKGSS2hG24TkW31hldZh0X5f0Q==
+ac-semantic-release@^0.4.6:
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/ac-semantic-release/-/ac-semantic-release-0.4.6.tgz#2e51c90034678b3b3687b662d0c26063eb4a58af"
+  integrity sha512-6mo6XF1RChyncJvYAzn+e/s4Ww6L7+DZs9Wdo73qWzGH5EKV2VfcysUWCB+lC8ULCUZSNdoWi9lxP8ORB7BFNg==
   dependencies:
     async "^3.2.6"
     chalk "4.1.2"
