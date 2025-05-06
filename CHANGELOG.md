@@ -1,3 +1,22 @@
+ 
+# [2.5.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.4.4..v2.5.0) (2025-05-06 18:01:30)
+
+
+### Feature
+
+* **App:** Allow batch fetching secret parameters | MP | [0d74ae3d45edde466aa36ca15e3f3a689676cc37](https://github.com/admiralcloud/ac-awssecrets/commit/0d74ae3d45edde466aa36ca15e3f3a689676cc37)    
+To speed up processes, this version now allows batch fetching of secret parameters  
+Related issues:
+### Tests
+
+* **App:** Fixed test | MP | [996dabf3f6287150da5aaa048bcb2c3b7aa9a289](https://github.com/admiralcloud/ac-awssecrets/commit/996dabf3f6287150da5aaa048bcb2c3b7aa9a289)    
+Fixed test  
+Related issues:
+### Chores
+
+* **App:** Updated packages | MP | [42be94ad3cb396fc40f4300eec4463d6cfe18b3a](https://github.com/admiralcloud/ac-awssecrets/commit/42be94ad3cb396fc40f4300eec4463d6cfe18b3a)    
+Updated packages  
+Related issues:
 
 ## [2.4.4](https://github.com/admiralcloud/ac-awssecrets/compare/v2.4.3..v2.4.4) (2025-04-20 06:17:50)
 
