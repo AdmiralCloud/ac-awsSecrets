@@ -36,7 +36,7 @@ const secretParameters = [
   { name: 'configVar5.path', json: true },
   { name: 'configVar6', json: true },
   { name: 'aws', json: true, merge: true },
-  { name: 'db/*', json: true, merge: true, path: 'db' }
+  { name: 'db/*', json: true, merge: true, path: 'db', array: true }
 ]
 
 const parameterStore = [
