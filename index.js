@@ -1,5 +1,5 @@
 const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager')
-const { SSMClient, GetParameterCommand, GetParametersByPathCommand } = require("@aws-sdk/client-ssm")
+const { SSMClient, GetParameterCommand, GetParametersCommand, GetParametersByPathCommand } = require("@aws-sdk/client-ssm")
 
 const testConfig = require('./test/config')
 const functionName = 'ac-awsSecrets'.padEnd(15)
@@ -93,14 +93,127 @@ const awsSecrets = () => {
 
   const loadSecretParameters = async({ secretParameters = [], config = {}, testMode = 0, debug = false, throwError = false, region = 'eu-central-1' } = {}) => {
     const environment = config?.environment || process.env.NODE_ENV || 'development'
-
+  
     const awsConfig = {
       region
     }
     const ssmClient = new SSMClient(awsConfig)
-
-    const getSecretParameter = async({ name, json = false, array = false, path, property, debug, merge }) => {
-      const parameterName = `/${environment}/${name}`
+  
+    // Process parameters in batches of 10 (AWS limit for GetParametersCommand)
+    const processBatchedParameters = async(paramList) => {
+      // Skip if no parameters
+      if (paramList.length === 0) return
+      
+      // Split parameters into batches of 10
+      const batchSize = 10
+      const batches = []
+      
+      for (let i = 0; i < paramList.length; i += batchSize) {
+        batches.push(paramList.slice(i, i + batchSize))
+      }
+      
+      // Process each batch
+      for (const batch of batches) {
+        if (testMode === 3) {
+          // For test mode, process individually as before
+          await Promise.all(batch.map(async param => {
+            const parameterName = `/${environment}/${param.name}`
+            const found = testConfig.parameterStore.find(item => item.name === parameterName)
+            let value = found?.value
+            
+            if (param.json && value) {
+              try {
+                value = JSON.parse(value)
+              } 
+              catch (e) {
+                console.error('%s | %s | %s', functionName, parameterName, e?.message)
+                if (throwError) throw e
+              }
+            }
+            
+            if (debug) {
+              console.warn('P %s | T %s | V %j', parameterName, typeof value, value)
+            }
+            setValue(config, { 
+              path: (param.path || param.name), 
+              value, 
+              array: param.array || false, 
+              property: param.property, 
+              merge: param.merge || false 
+            })
+          }))
+        } 
+        else {
+          // For production mode, use GetParametersCommand to fetch multiple parameters at once
+          try {
+            // Get parameter names for this batch
+            const parameterNames = batch.map(param => `/${environment}/${param.name}`)
+            
+            // Fetch all parameters in this batch with a single API call
+            const command = new GetParametersCommand({
+              Names: parameterNames,
+              WithDecryption: true
+            })
+            
+            const response = await ssmClient.send(command)
+            const parameters = response?.Parameters || []
+            
+            // Process each parameter
+            await Promise.all(parameters.map(async parameter => {
+              // Find corresponding parameter config
+              const paramName = parameter.Name
+              const paramConfig = batch.find(p => `/${environment}/${p.name}` === paramName)
+              
+              if (!paramConfig) return // Skip if no matching config found
+              
+              let value = parameter.Value
+              
+              if (paramConfig.json && value) {
+                try {
+                  value = JSON.parse(value)
+                } 
+                catch (e) {
+                  console.error('%s | %s | %s', functionName, paramName, e?.message)
+                  if (throwError) throw e
+                  return // Skip this parameter if JSON parsing fails
+                }
+              }
+              
+              if (debug) {
+                console.warn('P %s | T %s | V %j', paramName, typeof value, value)
+              }
+              
+              setValue(config, { 
+                path: (paramConfig.path || paramConfig.name), 
+                value, 
+                array: paramConfig.array || false, 
+                property: paramConfig.property, 
+                merge: paramConfig.merge || false 
+              })
+            }))
+            
+            // Handle invalid parameters
+            if (response?.InvalidParameters?.length > 0) {
+              console.error('%s | Invalid parameters: %j', functionName, response.InvalidParameters)
+              if (throwError) {
+                throw new Error(`Invalid parameters: ${response.InvalidParameters.join(', ')}`)
+              }
+            }
+          } 
+          catch (e) {
+            console.error('%s | Batch parameter fetch error: %s', functionName, e?.message)
+            if (throwError) throw e
+            
+            // Fallback: process parameters individually if batch fails
+            await Promise.all(batch.map(param => getSecretParameter(param)))
+          }
+        }
+      }
+    }
+  
+    // Keep the original getSecretParameter as fallback
+    const getSecretParameter = async(param) => {
+      const parameterName = `/${environment}/${param.name}`
       try {
         let value
         if (testMode === 3) {
@@ -118,26 +231,25 @@ const awsSecrets = () => {
           const response = await ssmClient.send(command)
           value = response?.Parameter?.Value
         }
-
+  
         // Extract and return the parameter value
-        if (json) {
+        if (param.json) {
           value = JSON.parse(value)
         }
-
+  
         if (debug) {
           console.warn('P %s | T %s | V %j', parameterName, typeof value, value)
         }
-        setValue(config, { path: (path || name), value, array, property, merge })
-
+        setValue(config, { path: (param.path || param.name), value, array: param.array, property: param.property, merge: param.merge })
       } 
       catch (e) {
         console.error('%s | %s | %s', functionName, parameterName, e?.message)
         if (throwError) throw e
       }
     }
-
-    // pushes multiple paramters into the given path (e.g. params /dev/db/1 and /dev/db/2 (name = /dev/db/*) will be objects in array databases (path))
-    const getSecretParametersByPath = async({ name, json = false, array = true, path, property, debug, merge }) => {
+  
+    // Keep the original getSecretParametersByPath for wildcard parameters
+    const getSecretParametersByPath = async({ path, name, json = false, array, property, merge }) => {
       if (!path) throw new Error('pathMustBeSet')
       const parameterName = `/${environment}/${name}`
       try {
@@ -169,14 +281,14 @@ const awsSecrets = () => {
           const response = await ssmClient.send(command)
           valueArray = response?.Parameters
         }
-
+  
         for (const item of valueArray) {
           let value = item?.Value
           // Extract and return the parameter value
           if (json) {
             value = JSON.parse(value)
           }
-
+  
           if (debug) {
             console.warn('P %s | T %s | V %j', item?.Name, typeof value, value)
           }
@@ -188,13 +300,30 @@ const awsSecrets = () => {
         if (throwError) throw e
       }
     }
-
-    for (const secretParameter of secretParameters) {
-      if (environment === 'test' && secretParameter?.ignoreInTestMode) continue
-      if (debug) secretParameter.debug = true
-      if (secretParameter.name.endsWith('*')) await getSecretParametersByPath(secretParameter)
-      else await getSecretParameter(secretParameter)
+  
+    // Filter out parameters with ignoreInTestMode = true in test environment
+    let filteredParams = secretParameters
+    if (environment === 'test') {
+      filteredParams = secretParameters.filter(param => !param.ignoreInTestMode)
     }
+    
+    // Add debug if needed
+    if (debug) {
+      filteredParams.forEach(param => param.debug = true)
+    }
+  
+    // Split parameters into regular and wildcard ones
+    const wildcardParams = filteredParams.filter(param => param.name.endsWith('*'))
+    const regularParams = filteredParams.filter(param => !param.name.endsWith('*'))
+    
+    // Process parameters in parallel
+    await Promise.all([
+      // Process regular parameters in batches
+      processBatchedParameters(regularParams),
+      
+      // Process wildcard parameters individually (using original method)
+      ...wildcardParams.map(param => getSecretParametersByPath(param))
+    ])
   }
 
 
