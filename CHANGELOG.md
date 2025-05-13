@@ -1,3 +1,17 @@
+
+## [2.5.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.0..v2.5.1) (2025-05-13 08:10:25)
+
+
+### Bug Fix
+
+* **App:** Fixed deep merge with arrays | MP | [715c67bc5ef1c2520069d07953c6f05fd08ab37a](https://github.com/admiralcloud/ac-awssecrets/commit/715c67bc5ef1c2520069d07953c6f05fd08ab37a)    
+Fixed deep merge with arrays  
+Related issues:
+### Chores
+
+* **App:** Updated packages | MP | [843ab11b885697b471c74d546b40d885cc9f2844](https://github.com/admiralcloud/ac-awssecrets/commit/843ab11b885697b471c74d546b40d885cc9f2844)    
+Updated packages  
+Related issues:
  
 # [2.5.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.4.4..v2.5.0) (2025-05-06 18:01:30)
 
