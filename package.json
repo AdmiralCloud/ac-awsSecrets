@@ -5,8 +5,8 @@
   "repository": "admiralcloud/ac-awssecrets",
   "version": "2.5.0",
   "dependencies": {
-    "@aws-sdk/client-secrets-manager": "^3.803.0",
-    "@aws-sdk/client-ssm": "^3.803.0"
+    "@aws-sdk/client-secrets-manager": "^3.808.0",
+    "@aws-sdk/client-ssm": "^3.808.0"
   },
   "devDependencies": {
     "ac-semantic-release": "^0.4.6",
