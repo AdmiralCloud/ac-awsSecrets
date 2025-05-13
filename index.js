@@ -32,16 +32,26 @@ const awsSecrets = () => {
   }
 
   const deepMerge = (target, source) => {
-    const result = { ...target }
-    for (const key in source) {
-      if (typeof source[key] === 'object' && !Array.isArray(source[key]) && typeof result[key] === 'object' && !Array.isArray(result[key])) {
-        result[key] = deepMerge(result[key], source[key])
-      } 
-      else {
-        result[key] = source[key]
-      }
+    if (Array.isArray(target) && Array.isArray(source)) {
+      return [...target, ...source]
     }
-    return result
+  
+    if (typeof source === 'object' && source !== null && typeof target === 'object' && target !== null) {
+      const result = { ...target }
+      
+      for (const key in source) {
+        if (key in result) {
+          result[key] = deepMerge(result[key], source[key])
+        }
+        else {
+          result[key] = source[key]
+        }
+      }
+      
+      return result
+    }
+    
+    return source
   }
 
   const setValue = (config, { path, value, array = false, property, merge = false }) => {
