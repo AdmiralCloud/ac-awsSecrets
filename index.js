@@ -32,12 +32,10 @@ const awsSecrets = () => {
   }
 
   const deepMerge = (target, source) => {
-    // Wenn beide Arrays sind, entferne Duplikate mit Set
     if (Array.isArray(target) && Array.isArray(source)) {
       return [...new Set([...target, ...source])]
     }
     
-    // Wenn beide Objekte sind (und nicht null)
     if (typeof source === 'object' && source !== null && typeof target === 'object' && target !== null) {
       const result = { ...target }
       for (const key in source) {
