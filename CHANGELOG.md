@@ -1,4 +1,18 @@
 
+## [2.5.2](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.1..v2.5.2) (2025-05-20 05:42:15)
+
+
+### Bug Fix
+
+* **App:** Do not create duplicate entries when merging arrays | MP | [2f5d6d49d543af077f9c0b31061ec0681ee9ae9c](https://github.com/admiralcloud/ac-awssecrets/commit/2f5d6d49d543af077f9c0b31061ec0681ee9ae9c)    
+Do not create duplicate entries when merging arrays  
+Related issues:
+### Chores
+
+* **App:** Updated packages | MP | [ccc52156ac8ca7f72a1b008465ff142b1d628e01](https://github.com/admiralcloud/ac-awssecrets/commit/ccc52156ac8ca7f72a1b008465ff142b1d628e01)    
+Updated packages  
+Related issues:
+
 ## [2.5.1](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.0..v2.5.1) (2025-05-13 08:10:25)
 
 
