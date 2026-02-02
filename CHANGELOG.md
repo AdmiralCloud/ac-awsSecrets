@@ -1,4 +1,13 @@
 
+## [2.5.6](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.5..v2.5.6) (2026-02-02 10:13:02)
+
+
+### Bug Fix
+
+* **App:** Package updates | MP | [9edb7d2442c461c1f8c0f6cc384a3c9063e6916c](https://github.com/admiralcloud/ac-awssecrets/commit/9edb7d2442c461c1f8c0f6cc384a3c9063e6916c)    
+Package updates  
+Related issues:
+
 ## [2.5.5](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.4..v2.5.5) (2026-01-19 11:53:48)
 
 
