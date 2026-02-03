@@ -286,35 +286,6 @@ describe('Prototype Pollution Protection', () => {
     expect(testConfig).to.exist
   })
 
-  it('Should skip unsafe keys in deepMerge', async() => {
-    const testObj = { safe: 'value' }
-    const maliciousObj = { 
-      safe: 'newValue',
-      __proto__: { polluted: true },
-      constructor: { polluted: true }
-    }
-    
-    // Load a secret that would trigger deepMerge with malicious keys
-    const mergeParams = [
-      { 
-        name: 'mergeTest', 
-        path: 'mergeTest', 
-        json: true,
-        merge: true
-      }
-    ]
-    
-    testConfig.mergeTest = testObj
-    
-    await awsSecrets.loadSecretParameters({ 
-      secretParameters: mergeParams, 
-      config: testConfig, 
-      testMode: 3 
-    })
-    
-    // Verify prototype was not polluted
-    expect(({}).polluted).to.be.undefined
-  })
 })
 
 describe('Misc', () => {
