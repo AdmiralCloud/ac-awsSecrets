@@ -20,7 +20,7 @@
     "coverage": "./node_modules/c8/bin/c8.js yarn test"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=20.0.0"
   },
   "resolutions": {
     "mocha/diff": "^8.0.3"
