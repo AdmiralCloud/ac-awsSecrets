@@ -22,13 +22,44 @@ Multisecrets -> the secret contains a list of secrets that should be fetched
 
 const awsSecrets = () => {
 
-  const getKey = (obj, key) => key.split('.').reduce((acc, cur) => acc[cur], obj)
+  const isUnsafeKeySegment = (segment) => (
+    segment === '__proto__' ||
+    segment === 'constructor' ||
+    segment === 'prototype'
+  )
+
+  const getKey = (obj, key) => {
+    if (!obj || typeof key !== 'string') {
+      return undefined
+    }
+    return key.split('.').reduce((acc, cur) => {
+      if (acc === undefined || acc === null) {
+        return undefined
+      }
+      if (isUnsafeKeySegment(cur)) {
+        // Prevent prototype pollution via property access
+        return undefined
+      }
+      return Object(acc)[cur]
+    }, obj)
+  }
 
   const setKey = (obj, key, value ) => {
+    if (!obj || typeof key !== 'string') {
+      return
+    }
     const [head, ...rest] = key.split('.')
-    !rest.length
-        ? obj[head] = value
-        : setKey(obj[head], rest.join('.'), value)
+    if (isUnsafeKeySegment(head)) {
+      throw new Error('Refusing to set unsafe key segment: ' + head)
+    }
+    if (!rest.length) {
+      obj[head] = value
+      return
+    }
+    if (obj[head] === undefined || obj[head] === null || typeof obj[head] !== 'object') {
+      obj[head] = {}
+    }
+    setKey(obj[head], rest.join('.'), value)
   }
 
   const deepMerge = (target, source) => {
