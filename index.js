@@ -22,13 +22,49 @@ Multisecrets -> the secret contains a list of secrets that should be fetched
 
 const awsSecrets = () => {
 
-  const getKey = (obj, key) => key.split('.').reduce((acc, cur) => acc[cur], obj)
+  // Helper function to check for unsafe key segments
+  const isUnsafeKeySegment = (segment) => (
+    segment === '__proto__' || 
+    segment === 'constructor' || 
+    segment === 'prototype'
+  )
 
-  const setKey = (obj, key, value ) => {
+  const getKey = (obj, key) => {
+    if (!obj || typeof key !== 'string') {
+      return undefined
+    }
+    
+    return key.split('.').reduce((acc, cur) => {
+      if (isUnsafeKeySegment(cur)) {
+        return undefined
+      }
+      if (acc === undefined || acc === null) {
+        return undefined
+      }
+      return acc[cur]
+    }, obj)
+  }
+
+  const setKey = (obj, key, value) => {
+    if (!obj || typeof key !== 'string') {
+      return
+    }
+    
     const [head, ...rest] = key.split('.')
-    !rest.length
-        ? obj[head] = value
-        : setKey(obj[head], rest.join('.'), value)
+    
+    if (isUnsafeKeySegment(head)) {
+      throw new Error('Refusing to set unsafe key segment: ' + head)
+    }
+    
+    if (!rest.length) {
+      obj[head] = value
+    }
+    else {
+      if (obj[head] === undefined || obj[head] === null || typeof obj[head] !== 'object') {
+        obj[head] = {}
+      }
+      setKey(obj[head], rest.join('.'), value)
+    }
   }
 
   const deepMerge = (target, source) => {
@@ -39,6 +75,9 @@ const awsSecrets = () => {
     if (typeof source === 'object' && source !== null && typeof target === 'object' && target !== null) {
       const result = { ...target }
       for (const key in source) {
+        if (isUnsafeKeySegment(key)) {
+          continue
+        }
         if (key in result) {
           result[key] = deepMerge(result[key], source[key])
         }
@@ -56,9 +95,17 @@ const awsSecrets = () => {
     // path can be from AWS parametes store (/a/b/c) or a real JSON path (a.b.c)    
     const keys = path.includes('/') ? path.split('/').filter(Boolean) : path.split('.')
     const lastKey = keys.pop()
+    
+    if (isUnsafeKeySegment(lastKey)) {
+      throw new Error('Refusing to set unsafe key segment: ' + lastKey)
+    }
+    
     let pointer = config
   
     for (const key of keys) {
+      if (isUnsafeKeySegment(key)) {
+        throw new Error('Refusing to traverse unsafe key segment: ' + key)
+      }
       if (!pointer[key]) {
         pointer[key] = {}
       }
@@ -90,7 +137,7 @@ const awsSecrets = () => {
     } 
     else {
       if (merge && typeof pointer[lastKey] === 'object' && !Array.isArray(pointer[lastKey]) && typeof value === 'object' && !Array.isArray(value)) {
-        pointer[lastKey] = deepMerge(pointer[lastKey], value)  // Use deepMerge instead of spread
+        pointer[lastKey] = deepMerge(pointer[lastKey], value)
       }
       else {
         pointer[lastKey] = value
@@ -265,7 +312,7 @@ const awsSecrets = () => {
         if (testMode === 3) {
           // fetch from availableSecrets
           valueArray = testConfig.parameterStore.filter(item => {
-            return item.name.startsWith(parameterName.replace('*', ''))
+            return item.name.startsWith(parameterName.replaceAll('*', ''))
           })
           valueArray = valueArray.map(item => {
             return {
@@ -282,7 +329,7 @@ const awsSecrets = () => {
         else {
           // fetch all paramters with the path
           const command = new GetParametersByPathCommand({
-            Path: parameterName.replace('*', ''),
+            Path: parameterName.replaceAll('*', ''),
             Recursive: true,
             WithDecryption: true,
           })
@@ -409,7 +456,10 @@ const awsSecrets = () => {
         if (value) {
           // convert values
           if (typeof value === 'object') {
-            Object.keys(value).forEach((key) => {
+            for (const key of Object.keys(value)) {
+              if (isUnsafeKeySegment(key)) {
+                continue
+              }
               let val = value[key]
               if (val === 'true') val = true
               else if (val === 'false') val = false
@@ -423,18 +473,21 @@ const awsSecrets = () => {
                 }
               }
               value[key] = val
-            })
+            }
           }
 
           if (secret.servers) {
             if (typeof secret.servers === 'boolean') {
               let servers = existingValue?.servers || []
-              config[secret.key].servers = servers.map(server => {
+              const updatedServers = servers.map(server => {
                 if (server.server === secret.serverName) {
                   server = { ...server, ...value }
                 }
                 return server
               })
+              if (!isUnsafeKeySegment('servers')) {
+                config[secret.key].servers = updatedServers
+              }
             }
             else {
               // NEW NOTATION AS OBJECT
