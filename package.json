@@ -3,7 +3,7 @@
   "author": "Mark Poepping (https://www.admiralcloud.com)",
   "license": "MIT",
   "repository": "admiralcloud/ac-awssecrets",
-  "version": "2.5.7",
+  "version": "3.0.0",
   "dependencies": {
     "@aws-sdk/client-secrets-manager": "^3.981.0",
     "@aws-sdk/client-ssm": "^3.981.0"
@@ -20,7 +20,7 @@
     "coverage": "./node_modules/c8/bin/c8.js yarn test"
   },
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=20.0.0"
   },
   "resolutions": {
     "mocha/diff": "^8.0.3"

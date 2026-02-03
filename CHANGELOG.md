@@ -1,3 +1,14 @@
+ 
+# [3.0.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.7..v3.0.0) (2026-02-03 10:00:56)
+
+
+### Chores
+
+* **Misc:** Minimum version: Node 20 | MP | [f41f9718a6f0f38eec9d637dcb20e40a8d6ea072](https://github.com/admiralcloud/ac-awssecrets/commit/f41f9718a6f0f38eec9d637dcb20e40a8d6ea072)    
+Minimum version: Node 20  
+Related issues:
+## BREAKING CHANGES
+* **Misc:** Minimum version: Node 20
 
 ## [2.5.7](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.6..v2.5.7) (2026-02-03 06:48:06)
 
