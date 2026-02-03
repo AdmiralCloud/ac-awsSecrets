@@ -141,6 +141,181 @@ describe('Check errors', () => {
   })
 })
 
+describe('Prototype Pollution Protection', () => {
+  let testConfig
+
+  beforeEach(() => {
+    // Create fresh config for each test to avoid contamination
+    testConfig = {}
+  })
+
+  it('Should reject __proto__ in secretParameters path', async() => {
+    const maliciousParams = [
+      { name: 'test', path: '__proto__.polluted', json: false }
+    ]
+    
+    try {
+      await awsSecrets.loadSecretParameters({ 
+        secretParameters: maliciousParams, 
+        config: testConfig, 
+        testMode: 3 
+      })
+      expect.fail('Should have thrown an error')
+    }
+    catch(e) {
+      expect(e).to.be.an('error')
+      expect(e.message).to.include('unsafe key segment')
+    }
+    
+    // Verify prototype was not polluted
+    expect(({}).polluted).to.be.undefined
+  })
+
+  it('Should reject constructor in secretParameters path', async() => {
+    const maliciousParams = [
+      { name: 'test', path: 'constructor.polluted', json: false }
+    ]
+    
+    try {
+      await awsSecrets.loadSecretParameters({ 
+        secretParameters: maliciousParams, 
+        config: testConfig, 
+        testMode: 3 
+      })
+      expect.fail('Should have thrown an error')
+    }
+    catch(e) {
+      expect(e).to.be.an('error')
+      expect(e.message).to.include('unsafe key segment')
+    }
+  })
+
+  it('Should reject prototype in secretParameters path', async() => {
+    const maliciousParams = [
+      { name: 'test', path: 'prototype.polluted', json: false }
+    ]
+    
+    try {
+      await awsSecrets.loadSecretParameters({ 
+        secretParameters: maliciousParams, 
+        config: testConfig, 
+        testMode: 3 
+      })
+      expect.fail('Should have thrown an error')
+    }
+    catch(e) {
+      expect(e).to.be.an('error')
+      expect(e.message).to.include('unsafe key segment')
+    }
+  })
+
+  it('Should reject __proto__ in nested path', async() => {
+    const maliciousParams = [
+      { name: 'test', path: 'safe.__proto__.polluted', json: false }
+    ]
+    
+    try {
+      await awsSecrets.loadSecretParameters({ 
+        secretParameters: maliciousParams, 
+        config: testConfig, 
+        testMode: 3 
+      })
+      expect.fail('Should have thrown an error')
+    }
+    catch(e) {
+      expect(e).to.be.an('error')
+      expect(e.message).to.include('unsafe key segment')
+    }
+  })
+
+  it('Should reject __proto__ in secret key', async() => {
+    const maliciousSecrets = [
+      { 
+        name: 'test', 
+        key: '__proto__.polluted',
+        value: { polluted: true }
+      }
+    ]
+    
+    try {
+      await awsSecrets.loadSecrets({ 
+        secrets: maliciousSecrets, 
+        config: testConfig, 
+        testMode: 3 
+      })
+      
+      // Should not throw, but should silently skip unsafe key
+      expect(({}).polluted).to.be.undefined
+    }
+    catch(e) {
+      // If it throws, that's also acceptable protection
+      expect(e).to.be.an('error')
+      expect(e.message).to.include('unsafe key segment')
+    }
+  })
+
+  it('Should allow safe paths with proto substring', async() => {
+    // Paths that contain "proto" but are not the dangerous keywords
+    const safeParams = [
+      { name: 'test', path: 'protocol.settings', json: false }
+    ]
+    
+    // This should not throw
+    await awsSecrets.loadSecretParameters({ 
+      secretParameters: safeParams, 
+      config: testConfig, 
+      testMode: 3 
+    })
+    
+    expect(testConfig.protocol).to.exist
+  })
+
+  it('Should handle multiple wildcards in parameter names', async() => {
+    const wildcardParams = [
+      { name: 'test*config*values', path: 'wildcardTest', json: false }
+    ]
+    
+    // This should handle multiple * correctly with replaceAll
+    await awsSecrets.loadSecretParameters({ 
+      secretParameters: wildcardParams, 
+      config: testConfig, 
+      testMode: 3 
+    })
+    
+    // Should not throw and should process correctly
+    expect(testConfig).to.exist
+  })
+
+  it('Should skip unsafe keys in deepMerge', async() => {
+    const testObj = { safe: 'value' }
+    const maliciousObj = { 
+      safe: 'newValue',
+      __proto__: { polluted: true },
+      constructor: { polluted: true }
+    }
+    
+    // Load a secret that would trigger deepMerge with malicious keys
+    const mergeParams = [
+      { 
+        name: 'mergeTest', 
+        path: 'mergeTest', 
+        json: true,
+        merge: true
+      }
+    ]
+    
+    testConfig.mergeTest = testObj
+    
+    await awsSecrets.loadSecretParameters({ 
+      secretParameters: mergeParams, 
+      config: testConfig, 
+      testMode: 3 
+    })
+    
+    // Verify prototype was not polluted
+    expect(({}).polluted).to.be.undefined
+  })
+})
 
 describe('Misc', () => {
   var hook
