@@ -1,31 +1,24 @@
 const { SecretsManagerClient, GetSecretValueCommand } = require('@aws-sdk/client-secrets-manager')
 const { SSMClient, GetParameterCommand, GetParametersCommand, GetParametersByPathCommand } = require("@aws-sdk/client-ssm")
 
-const testConfig = require('./test/config')
 const functionName = 'ac-awsSecrets'.padEnd(15)
 
 /**
 * Replaces configuration variables with secrets
-
-KEY is the variable name
-NAME is the name of the secret 
-
-OPT
-serverName
-
-MULTISECRETS
-Multisecrets -> the secret contains a list of secrets that should be fetched
 *
-* TESTMODES
-* 3 -> use secrets from testConfig
+* KEY is the variable name
+* NAME is the name of the secret
+*
+* MULTISECRETS
+* Multisecrets -> the secret contains a list of secrets that should be fetched
 */
 
 const awsSecrets = () => {
 
   // Helper function to check for unsafe key segments
   const isUnsafeKeySegment = (segment) => (
-    segment === '__proto__' || 
-    segment === 'constructor' || 
+    segment === '__proto__' ||
+    segment === 'constructor' ||
     segment === 'prototype'
   )
 
@@ -33,7 +26,7 @@ const awsSecrets = () => {
     if (!obj || typeof key !== 'string') {
       return undefined
     }
-    
+
     return key.split('.').reduce((acc, cur) => {
       if (isUnsafeKeySegment(cur)) {
         return undefined
@@ -49,13 +42,13 @@ const awsSecrets = () => {
     if (!obj || typeof key !== 'string') {
       return
     }
-    
+
     const [head, ...rest] = key.split('.')
-    
+
     if (isUnsafeKeySegment(head)) {
       throw new Error('Refusing to set unsafe key segment: ' + head)
     }
-    
+
     if (!rest.length) {
       obj[head] = value
     }
@@ -71,7 +64,7 @@ const awsSecrets = () => {
     if (Array.isArray(target) && Array.isArray(source)) {
       return [...new Set([...target, ...source])]
     }
-    
+
     if (typeof source === 'object' && source !== null && typeof target === 'object' && target !== null) {
       const result = { ...target }
       for (const key in source) {
@@ -87,21 +80,21 @@ const awsSecrets = () => {
       }
       return result
     }
-    
+
     return source
   }
 
   const setValue = (config, { path, value, array = false, property, merge = false }) => {
-    // path can be from AWS parametes store (/a/b/c) or a real JSON path (a.b.c)    
+    // path can be from AWS parameter store (/a/b/c) or a real JSON path (a.b.c)
     const keys = path.includes('/') ? path.split('/').filter(Boolean) : path.split('.')
     const lastKey = keys.pop()
-    
+
     if (isUnsafeKeySegment(lastKey)) {
       throw new Error('Refusing to set unsafe key segment: ' + lastKey)
     }
-    
+
     let pointer = config
-  
+
     for (const key of keys) {
       if (isUnsafeKeySegment(key)) {
         throw new Error('Refusing to traverse unsafe key segment: ' + key)
@@ -111,7 +104,7 @@ const awsSecrets = () => {
       }
       pointer = pointer[key]
     }
-  
+
     if (array) {
       if (!Array.isArray(pointer[lastKey])) {
         pointer[lastKey] = []
@@ -119,22 +112,22 @@ const awsSecrets = () => {
       if (property) {
         const [propKey, propValue] = Object.entries(property)[0]
         const index = pointer[lastKey].findIndex(item => item[propKey] === propValue)
-  
+
         if (index !== -1) {
           if (typeof value !== 'object' || Array.isArray(value)) {
             throw new Error("Value must be an object when replacing an entry in the array.")
           }
           // Merge existing properties with new ones
           pointer[lastKey][index] = { ...pointer[lastKey][index], ...value }
-        } 
+        }
         else {
           pointer[lastKey].push(value)
         }
-      } 
+      }
       else {
         pointer[lastKey].push(value)
       }
-    } 
+    }
     else {
       if (merge && typeof pointer[lastKey] === 'object' && !Array.isArray(pointer[lastKey]) && typeof value === 'object' && !Array.isArray(value)) {
         pointer[lastKey] = deepMerge(pointer[lastKey], value)
@@ -144,299 +137,209 @@ const awsSecrets = () => {
       }
     }
   }
-  
 
-  const loadSecretParameters = async({ secretParameters = [], config = {}, testMode = 0, debug = false, throwError = false, region = 'eu-central-1' } = {}) => {
+
+  const loadSecretParameters = async({ secretParameters = [], config = {}, debug = false, throwError = false, region = 'eu-central-1' } = {}) => {
     const environment = config?.environment || process.env.NODE_ENV || 'development'
-  
-    const awsConfig = {
-      region
-    }
-    const ssmClient = new SSMClient(awsConfig)
-  
+
+    const ssmClient = new SSMClient({ region })
+
     // Process parameters in batches of 10 (AWS limit for GetParametersCommand)
     const processBatchedParameters = async(paramList) => {
-      // Skip if no parameters
       if (paramList.length === 0) return
-      
-      // Split parameters into batches of 10
+
       const batchSize = 10
       const batches = []
-      
+
       for (let i = 0; i < paramList.length; i += batchSize) {
         batches.push(paramList.slice(i, i + batchSize))
       }
-      
-      // Process each batch
+
       for (const batch of batches) {
-        if (testMode === 3) {
-          // For test mode, process individually as before
-          await Promise.all(batch.map(async param => {
-            const parameterName = `/${environment}/${param.name}`
-            const found = testConfig.parameterStore.find(item => item.name === parameterName)
-            let value = found?.value
-            
-            if (param.json && value) {
+        try {
+          const parameterNames = batch.map(param => `/${environment}/${param.name}`)
+
+          const command = new GetParametersCommand({
+            Names: parameterNames,
+            WithDecryption: true
+          })
+
+          const response = await ssmClient.send(command)
+          const parameters = response?.Parameters || []
+
+          await Promise.all(parameters.map(async parameter => {
+            const parameterName = parameter.Name
+            const paramConfig = batch.find(p => `/${environment}/${p.name}` === parameterName)
+
+            if (!paramConfig) return
+
+            let value = parameter.Value
+
+            if (paramConfig.json && value) {
               try {
                 value = JSON.parse(value)
-              } 
+              }
               catch (e) {
                 console.error('%s | %s | %s', functionName, parameterName, e?.message)
                 if (throwError) throw e
+                return
               }
             }
-            
+
             if (debug) {
               console.warn('P %s | T %s | V %j', parameterName, typeof value, value)
             }
-            setValue(config, { 
-              path: (param.path || param.name), 
-              value, 
-              array: param.array || false, 
-              property: param.property, 
-              merge: param.merge || false 
+
+            setValue(config, {
+              path: (paramConfig.path || paramConfig.name),
+              value,
+              array: paramConfig.array || false,
+              property: paramConfig.property,
+              merge: paramConfig.merge || false
             })
           }))
-        } 
-        else {
-          // For production mode, use GetParametersCommand to fetch multiple parameters at once
-          try {
-            // Get parameter names for this batch
-            const parameterNames = batch.map(param => `/${environment}/${param.name}`)
-            
-            // Fetch all parameters in this batch with a single API call
-            const command = new GetParametersCommand({
-              Names: parameterNames,
-              WithDecryption: true
-            })
-            
-            const response = await ssmClient.send(command)
-            const parameters = response?.Parameters || []
-            
-            // Process each parameter
-            await Promise.all(parameters.map(async parameter => {
-              // Find corresponding parameter config
-              const paramName = parameter.Name
-              const paramConfig = batch.find(p => `/${environment}/${p.name}` === paramName)
-              
-              if (!paramConfig) return // Skip if no matching config found
-              
-              let value = parameter.Value
-              
-              if (paramConfig.json && value) {
-                try {
-                  value = JSON.parse(value)
-                } 
-                catch (e) {
-                  console.error('%s | %s | %s', functionName, paramName, e?.message)
-                  if (throwError) throw e
-                  return // Skip this parameter if JSON parsing fails
-                }
-              }
-              
-              if (debug) {
-                console.warn('P %s | T %s | V %j', paramName, typeof value, value)
-              }
-              
-              setValue(config, { 
-                path: (paramConfig.path || paramConfig.name), 
-                value, 
-                array: paramConfig.array || false, 
-                property: paramConfig.property, 
-                merge: paramConfig.merge || false 
-              })
-            }))
-            
-            // Handle invalid parameters
-            if (response?.InvalidParameters?.length > 0) {
-              console.error('%s | Invalid parameters: %j', functionName, response.InvalidParameters)
-              if (throwError) {
-                throw new Error(`Invalid parameters: ${response.InvalidParameters.join(', ')}`)
-              }
+
+          if (response?.InvalidParameters?.length > 0) {
+            console.error('%s | Invalid parameters: %j', functionName, response.InvalidParameters)
+            if (throwError) {
+              throw new Error(`Invalid parameters: ${response.InvalidParameters.join(', ')}`)
             }
-          } 
-          catch (e) {
-            console.error('%s | Batch parameter fetch error: %s', functionName, e?.message)
-            if (throwError) throw e
-            
-            // Fallback: process parameters individually if batch fails
-            await Promise.all(batch.map(param => getSecretParameter(param)))
           }
+        }
+        catch (e) {
+          // Security errors must always propagate, regardless of throwError flag
+          if (e?.message?.includes('unsafe key segment')) throw e
+
+          console.error('%s | Batch parameter fetch error: %s', functionName, e?.message)
+          if (throwError) throw e
+
+          // Fallback: process parameters individually if batch fails
+          await Promise.all(batch.map(param => getSecretParameter(param)))
         }
       }
     }
-  
-    // Keep the original getSecretParameter as fallback
+
+    // Fallback for individual parameter fetching
     const getSecretParameter = async(param) => {
       const parameterName = `/${environment}/${param.name}`
       try {
-        let value
-        if (testMode === 3) {
-          // fetch from availableSecrets
-          const found = testConfig.parameterStore.find(item => item.name === parameterName)
-          value = found?.value         
-        }
-        else {
-          const command = new GetParameterCommand({
-            Name: parameterName,
-            WithDecryption: true,
-          })
-      
-          // Send the command to retrieve the parameter
-          const response = await ssmClient.send(command)
-          value = response?.Parameter?.Value
-        }
-  
-        // Extract and return the parameter value
+        const command = new GetParameterCommand({
+          Name: parameterName,
+          WithDecryption: true,
+        })
+
+        const response = await ssmClient.send(command)
+        let value = response?.Parameter?.Value
+
         if (param.json) {
           value = JSON.parse(value)
         }
-  
+
         if (debug) {
           console.warn('P %s | T %s | V %j', parameterName, typeof value, value)
         }
         setValue(config, { path: (param.path || param.name), value, array: param.array, property: param.property, merge: param.merge })
-      } 
+      }
       catch (e) {
         console.error('%s | %s | %s', functionName, parameterName, e?.message)
         if (throwError) throw e
       }
     }
-  
-    // Keep the original getSecretParametersByPath for wildcard parameters
+
+    // Fetch all parameters under a path (wildcard support)
     const getSecretParametersByPath = async({ path, name, json = false, array, property, merge }) => {
       if (!path) throw new Error('pathMustBeSet')
       const parameterName = `/${environment}/${name}`
       try {
         let valueArray = []
-        if (testMode === 3) {
-          // fetch from availableSecrets
-          valueArray = testConfig.parameterStore.filter(item => {
-            return item.name.startsWith(parameterName.replaceAll('*', ''))
+        let nextToken = undefined
+        do {
+          const command = new GetParametersByPathCommand({
+            Path: parameterName.replaceAll('*', ''),
+            Recursive: true,
+            WithDecryption: true,
+            NextToken: nextToken,
           })
-          valueArray = valueArray.map(item => {
-            return {
-              Name: item?.name,
-              Type: 'SecureString',
-              Value: item?.value,
-              Version: 1,
-              LastModifiedDate: new Date(),
-              ARN: `arn:aws:ssm:region:account-id:parameter/${item?.name}`,
-              DataType: 'text'
-            }
-          })
-        }        
-        else {
-          // fetch all paramters with the path
-          let nextToken = undefined
-          do {
-            const command = new GetParametersByPathCommand({
-              Path: parameterName.replace('*', ''),
-              Recursive: true,
-              WithDecryption: true,
-              NextToken: nextToken,
-            })
-            const response = await ssmClient.send(command)
-            valueArray.push(...response.Parameters)
-            nextToken = response.NextToken
-          }
-          while (nextToken)
+          const response = await ssmClient.send(command)
+          valueArray.push(...response.Parameters)
+          nextToken = response.NextToken
         }
-  
+        while (nextToken)
+
         for (const item of valueArray) {
           let value = item?.Value
-          // Extract and return the parameter value
+
           if (json) {
             value = JSON.parse(value)
           }
-  
+
           if (debug) {
             console.warn('P %s | T %s | V %j', item?.Name, typeof value, value)
           }
           setValue(config, { path, value, array, property, merge })
         }
-      } 
+      }
       catch (e) {
         console.error('%s | %s | %s', functionName, parameterName, e?.message)
         if (throwError) throw e
       }
     }
-  
+
     // Filter out parameters with ignoreInTestMode = true in test environment
     let filteredParams = secretParameters
     if (environment === 'test') {
       filteredParams = secretParameters.filter(param => !param.ignoreInTestMode)
     }
-    
-    // Add debug if needed
+
     if (debug) {
       filteredParams.forEach(param => param.debug = true)
     }
-  
+
     // Split parameters into regular and wildcard ones
     const wildcardParams = filteredParams.filter(param => param.name.endsWith('*'))
     const regularParams = filteredParams.filter(param => !param.name.endsWith('*'))
-    
-    // Process parameters in parallel
+
     await Promise.all([
-      // Process regular parameters in batches
       processBatchedParameters(regularParams),
-      
-      // Process wildcard parameters individually (using original method)
       ...wildcardParams.map(param => getSecretParametersByPath(param))
     ])
   }
 
 
-  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, testMode = 0, debug = false, region = 'eu-central-1' } = {}) => {
+  const loadSecrets = async({ secrets = [], multisecrets = [], config = {}, debug = false, region = 'eu-central-1' } = {}) => {
     const environment = config?.environment || 'development'
 
-    const awsConfig = {
-      region
-    }
-    const client = new SecretsManagerClient(awsConfig)
+    const client = new SecretsManagerClient({ region })
 
-  
     const getSecret = async({ secret }) => {
       const secretName = (environment === 'test' ? 'test.' : '') + secret?.name + (secret?.suffix ? '.' + secret?.suffix : '')
 
-      // TESTMODE
-      if (testMode === 3) {
-        // fetch from availableSecrets
-        const found = testConfig.availableSecrets.find(item => item.name === secret.name)
-        secret.value = found?.value
+      const command = new GetSecretValueCommand({
+        SecretId: secretName
+      })
+      try {
+        const response = await client.send(command)
+        if (response?.SecretString) {
+          secret.value = JSON.parse(response?.SecretString)
+        }
       }
-      else {
-        const command = new GetSecretValueCommand({
-          SecretId: secretName
-        })
-        try {
-          const response = await client.send(command)
-          if (response?.SecretString) {
-            secret.value = JSON.parse(response?.SecretString)
-          }
-        }
-        catch(e) {
-          console.error('%s | %s | %s', functionName, secretName, e?.message)
-        }
+      catch(e) {
+        console.error('%s | %s | %s', functionName, secretName, e?.message)
       }
       return secret
     }
 
     const fetchSecrets = async({ secrets }) => {
-      // filter out secrets with ignoreInTestMode = true
+      // Filter out secrets with ignoreInTestMode = true in test environment
       if (environment === 'test') {
         secrets = secrets.filter(secret => !secret.ignoreInTestMode)
       }
       return Promise.all(secrets.map(secret => getSecret({ secret })))
     }
 
-    // fetch placeholder
+    // Fetch multisecrets first and expand them into the secrets list
     if (multisecrets.length > 0) {
-      // some keys can have multiple entries (e.g. cloudfrontCOnfigs can have 1 - n entries)
-      // we have to fetch them first from a secret and add them to the secrets to fetch 
       const secretsToAdd = await fetchSecrets({ secrets: multisecrets })
-      // iterate each multisecret and add the values as new secrets
       secretsToAdd.forEach(secadd => {
         const items = JSON.parse(secadd?.value?.values) || []
         if (typeof items !== 'object' || items.length < 1) {
@@ -444,12 +347,11 @@ const awsSecrets = () => {
           throw new Error('MultiSecret has no valid property values')
         }
         items.forEach(item => {
-          const p = {
+          secrets.push({
             key: secadd.key,
             name: item,
-            type: 'arrayObject' // multisecrets contain multiple secrets that belong to the same config property (which is an array of objects)
-          }
-          secrets.push(p)
+            type: 'arrayObject'
+          })
         })
       })
     }
@@ -460,7 +362,7 @@ const awsSecrets = () => {
         let existingValue = getKey(config, secret.key) || {}
         const value = secret?.value
         if (value) {
-          // convert values
+          // Convert string booleans and JSON values
           if (typeof value === 'object') {
             for (const key of Object.keys(value)) {
               if (isUnsafeKeySegment(key)) {
@@ -495,14 +397,6 @@ const awsSecrets = () => {
                 config[secret.key].servers = updatedServers
               }
             }
-            else {
-              // NEW NOTATION AS OBJECT
-              /* TODO: Probably not used anywhere, so legacy is ok
-              let match = {}
-              _.set(match, _.get(secret.servers, 'identifier'), _.get(secret.servers, 'value'))
-              existingValue = _.find(_.get(config, key, []), match)   
-              */
-            }
           }
           else if (secret?.type === 'arrayObject') {
             existingValue.push(value)
@@ -521,7 +415,7 @@ const awsSecrets = () => {
           console.warn('%s | %s | %j', functionName, secret?.name, existingValue)
         }
       }
-    }  
+    }
   }
 
   return {

@@ -1,192 +1,96 @@
+// Test fixture data - only used in tests, never imported by production code
+
 const config = {
-  configVar1: {
-    c1: false
-  },
+  environment: 'test',
+  configVar1: { c1: true },
   configVar2: {
-    servers: [
-      { server: 'cacheRead', host: 'localhost', port: 6379 },
-    ]
+    servers: [{ server: 'main', port: 3000 }]
   },
-  configVar4: {
-    api: {
-      port: 90
-    }
-  },
-  configVar5: {
-    path: {
-      cookie: false
-    }
-  },
+  configVar5: { path: {} },
+  configVar7: { level: 'info' },
   aws: {
     account: '123',
     accessKeys: []
-  },
-  configVar7: {
-    level: 'info'
-  },
-  db: []
+  }
 }
 
+// Simulates SSM Parameter Store entries
+const parameterStore = [
+  { name: '/test/configVar1', value: JSON.stringify({ c1: true, c2: 'value2', c3: 42 }) },
+  { name: '/test/configVar2', value: JSON.stringify({ port: 5432 }) },
+  { name: '/test/configVar4/api/url', value: 'https://api.admiralcloud.com' },
+  { name: '/test/configVar5/path/cookie', value: 'true' },
+  { name: '/test/configVar6/prop1', value: '123' },
+  { name: '/test/configVar6/prop2', value: 'abc' },
+  { name: '/test/db/1', value: JSON.stringify({ url: 'https://db1.admiralcloud.com' }) },
+  { name: '/test/db/2', value: JSON.stringify({ url: 'https://db2.admiralcloud.com' }) },
+  // Merged aws config
+  { name: '/test/aws', value: JSON.stringify({ account: '456', accessKeys: [] }) },
+]
 
-// AWS PARAMETER STORE
+// Parameters to load via SSM
 const secretParameters = [
   { name: 'configVar1', json: true },
-  { name: 'configVar2', json: true, array: true, path: 'configVar2.servers', property: { server: 'cacheRead' } },
-  { name: 'configVar4/api', json: true },
-  { name: 'configVar5.path', json: true },
-  { name: 'configVar6', json: true },
+  { name: 'configVar2', json: true, path: 'configVar2.servers.0', merge: true },
+  { name: 'configVar4/api/url', path: 'configVar4.api.url' },
+  { name: 'configVar5/path/cookie', path: 'configVar5.path.cookie' },
+  { name: 'configVar6/prop1', path: 'configVar6.prop1' },
+  { name: 'configVar6/prop2', path: 'configVar6.prop2' },
+  { name: 'configVar7/nonExisting', path: 'configVar7.level' },
   { name: 'aws', json: true, merge: true },
-  { name: 'db/*', json: true, merge: true, path: 'db', array: true }
+  { name: 'db/*', path: 'db', array: true, json: true },
 ]
 
-const parameterStore = [
-  { name: '/test/configVar1', value: JSON.stringify({ c1: true, c2: 123, c3: 'abc' }) },
+// Simulates Secrets Manager entries
+const availableSecrets = [
   {
-    name: '/test/configVar2',
-    value: JSON.stringify({
-      port: 6360,
-      host: 'myRedisHost'
-    })
+    name: 'configVar1',
+    value: { c2: 'secretValue2', c3: 99 }
   },
   {
-    name: '/test/configVar3',
-  }, 
-  {
-    name: '/test/configVar4/api',
-    value: JSON.stringify({ "url":"https://api.admiralcloud.com" })
+    name: 'configVar2',
+    value: { port: 9999 }
   },
   {
-    name: '/test/errorVar1',
-    value: 'JSON:abc',
+    name: 'configVar4',
+    value: { api: 'JSON:{"url":"https://api.admiralcloud.com"}' }
   },
   {
-    name: '/test/configVar5.path',
-    value: JSON.stringify({ cookie: true })
+    name: 'configVar5',
+    value: { cookie: 'true' }
   },
   {
-    name: '/test/configVar6',
-    value: JSON.stringify({
-      prop1: 123,
-      prop2: 'abc'
-    })
+    name: 'configVar6',
+    value: { prop1: 123, prop2: 'abc' }
   },
   {
-    name: '/test/aws',
-    value: JSON.stringify({
-      account: '456'
-    })
+    name: 'awsAccessKey1',
+    value: { accessKeyId: 'awsKey1', secretAccessKey: 'secret1' }
   },
   {
-    name: '/test/db/1',
-    value: JSON.stringify({ url: 'https://db1.admiralcloud.com' }),
+    name: 'awsAccessKey2',
+    value: { accessKeyId: 'awsKey2', secretAccessKey: 'secret2' }
   },
   {
-    name: '/test/db/2',
-    value: JSON.stringify({ url: 'https://db2.admiralcloud.com' }),
+    name: 'awsAccessKeys',
+    value: { values: JSON.stringify(['awsAccessKey1', 'awsAccessKey2']) }
   },
+  {
+    name: 'invalidJSON',
+    value: 'not-valid-json'
+  }
 ]
 
-
-// AWS SECRETS 
 const secrets = [
-  { key: 'configVar1', name: 'simple' },
-  { key: 'configVar2', name: 'server', servers: true, serverName: 'cacheRead' },
-  { key: 'configVar4', name: 'json' },
-  { key: 'configVar5.path', name: 'path' },
-  { key: 'configVar6', name: 'notExistingLocally' },
-  { key: 'configVar7', name: 'notExistingKey' },
+  { name: 'configVar1', key: 'configVar1' },
+  { name: 'configVar2', key: 'configVar2', servers: true, serverName: 'main' },
+  { name: 'configVar4', key: 'configVar4' },
+  { name: 'configVar5', key: 'configVar5' },
+  { name: 'configVar6', key: 'configVar6' },
 ]
-
-
-
-const availableSecrets = [{
-  key: 'configVar1',
-  name: 'simple',
-  value: {
-    c1: 'true',
-    c2: 123,
-    c3: 'abc'
-  },
-  log: true
-}, {
-  key: 'configVar2',
-  name: 'server',
-  value: {
-    port: 6360,
-    host: 'myRedisHost'
-  }
-},
-{
-  key: 'configVar3',
-  name: 'noSecret'
-}, 
-{
-  key: 'configVar4',
-  name: 'json',
-  value: {
-    api: 'JSON:{"url":"https://api.admiralcloud.com"}',
-    valueHasJSON: true
-  }
-},
-{
-  key: 'errorVar1',
-  name: 'invalidJSON',
-  value: {
-    api: 'JSON:abc',
-    valueHasJSON: true
-  }
-},
-{
-  key: 'configVar5.path',
-  name: 'path',
-  value: {
-    cookie: true
-  }
-},
-{
-  key: 'configVar6',
-  name: 'notExistingLocally',
-  value: {
-    prop1: 123,
-    prop2: 'abc'
-  }
-},
-{ 
-  key: 'aws.accessKeys', 
-  name: 'aws.accessKeyConfigs',
-  value: {
-    values: '["aws.key1", "aws.key2"]'
-  }
-},
-{ 
-  key: 'aws.failedKeys', 
-  name: 'aws.failedKeysConfig',
-  value: {
-    values: 123
-  }
-},
-{
-  key: 'aws.key1',
-  name: 'aws.key1',
-  value: {
-    accessKeyId: 'awsKey1',
-    secretAccessKey: 'awsSecret1'
-  }
-},{
-  key: 'aws.key2',
-  name: 'aws.key2',
-  value: {
-    accessKeyId: 'awsKey2',
-    secretAccessKey: 'awsSecret2'
-  }
-}]
 
 const multisecrets = [
-  { key: 'aws.accessKeys', name: 'aws.accessKeyConfigs' }
-]
-
-const multisecretsFail = [
-  { key: 'aws.failedKeys', name: 'aws.failedKeysConfig' } 
+  { name: 'awsAccessKeys', key: 'aws.accessKeys' }
 ]
 
 module.exports = {
@@ -194,8 +98,6 @@ module.exports = {
   parameterStore,
   secretParameters,
   availableSecrets,
-  multisecretsFail,
   secrets,
   multisecrets
 }
-
