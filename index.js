@@ -308,7 +308,7 @@ const awsSecrets = () => {
       if (!path) throw new Error('pathMustBeSet')
       const parameterName = `/${environment}/${name}`
       try {
-        let valueArray
+        let valueArray = []
         if (testMode === 3) {
           // fetch from availableSecrets
           valueArray = testConfig.parameterStore.filter(item => {
