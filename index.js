@@ -273,7 +273,7 @@ const awsSecrets = () => {
         let value
         if (testMode === 3) {
           // fetch from availableSecrets
-          let found = testConfig.parameterStore.find(item => item.name === parameterName)
+          const found = testConfig.parameterStore.find(item => item.name === parameterName)
           value = found?.value         
         }
         else {
@@ -328,13 +328,19 @@ const awsSecrets = () => {
         }        
         else {
           // fetch all paramters with the path
-          const command = new GetParametersByPathCommand({
-            Path: parameterName.replaceAll('*', ''),
-            Recursive: true,
-            WithDecryption: true,
-          })
-          const response = await ssmClient.send(command)
-          valueArray = response?.Parameters
+          let nextToken = undefined
+          do {
+            const command = new GetParametersByPathCommand({
+              Path: parameterName.replace('*', ''),
+              Recursive: true,
+              WithDecryption: true,
+              NextToken: nextToken,
+            })
+            const response = await ssmClient.send(command)
+            valueArray.push(...response.Parameters)
+            nextToken = response.NextToken
+          }
+          while (nextToken)
         }
   
         for (const item of valueArray) {
@@ -397,7 +403,7 @@ const awsSecrets = () => {
       // TESTMODE
       if (testMode === 3) {
         // fetch from availableSecrets
-        let found = testConfig.availableSecrets.find(item => item.name === secret.name)
+        const found = testConfig.availableSecrets.find(item => item.name === secret.name)
         secret.value = found?.value
       }
       else {
@@ -429,16 +435,16 @@ const awsSecrets = () => {
     if (multisecrets.length > 0) {
       // some keys can have multiple entries (e.g. cloudfrontCOnfigs can have 1 - n entries)
       // we have to fetch them first from a secret and add them to the secrets to fetch 
-      let secretsToAdd = await fetchSecrets({ secrets: multisecrets })
+      const secretsToAdd = await fetchSecrets({ secrets: multisecrets })
       // iterate each multisecret and add the values as new secrets
       secretsToAdd.forEach(secadd => {
-        let items = JSON.parse(secadd?.value?.values) || []
+        const items = JSON.parse(secadd?.value?.values) || []
         if (typeof items !== 'object' || items.length < 1) {
           console.error('%s | %s | MultiSecret has no valid property values', functionName, secadd.name)
           throw new Error('MultiSecret has no valid property values')
         }
         items.forEach(item => {
-          let p = {
+          const p = {
             key: secadd.key,
             name: item,
             type: 'arrayObject' // multisecrets contain multiple secrets that belong to the same config property (which is an array of objects)
@@ -452,7 +458,7 @@ const awsSecrets = () => {
       await fetchSecrets({ secrets })
       for (const secret of secrets) {
         let existingValue = getKey(config, secret.key) || {}
-        let value = secret?.value
+        const value = secret?.value
         if (value) {
           // convert values
           if (typeof value === 'object') {
@@ -467,7 +473,7 @@ const awsSecrets = () => {
                 try {
                   val = JSON.parse(val.substring(5))
                 }
-                catch(e) {
+                catch {
                   console.error('%s | %s | JSON could not be parsed %j', functionName, secret.name, val)
                   throw new Error('invalidJSON')
                 }
@@ -478,7 +484,7 @@ const awsSecrets = () => {
 
           if (secret.servers) {
             if (typeof secret.servers === 'boolean') {
-              let servers = existingValue?.servers || []
+              const servers = existingValue?.servers || []
               const updatedServers = servers.map(server => {
                 if (server.server === secret.serverName) {
                   server = { ...server, ...value }
