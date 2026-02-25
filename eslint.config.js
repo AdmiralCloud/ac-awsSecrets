@@ -1,34 +1,46 @@
 const globals = require('globals')
+const js = require('@eslint/js')
 
 module.exports = [
   {
-    files: ['index.js', 'test/test.js'],
+    ignores: ['config/env/', 'config/env/**']
+  },
+  {
+    files: ['app/**/*.js', 'config/**/*.js', 'test/**/*.js'],
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: 'module',
+      sourceType: 'commonjs',
       globals: {
-        ...globals.commonjs,
-        ...globals.es2015,
-        ...globals.node,
-        expect: 'readonly',
-        describe: 'readonly',
-        it: 'readonly'
+        ...globals.es2022,
+        ...globals.node
       }
     },
     rules: {
-      'no-const-assign': 'error',
-      'space-before-function-paren': 'off',
+      ...js.configs.recommended.rules,
+      // --- code quality ---
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-useless-escape': 'off',
+      'no-var': 'error',
+      'prefer-const': ['error', { ignoreReadBeforeAssign: true }],
+      'eqeqeq': 'error',
+      'curly': ['error', 'multi-line'],
+      // --- formatting ---
+      'space-before-function-paren': ['error', { anonymous: 'never', named: 'never', asyncArrow: 'never' }],
       'no-extra-semi': 'off',
       'object-curly-spacing': ['error', 'always'],
       'brace-style': ['error', 'stroustrup', { allowSingleLine: true }],
-      'block-spacing': 'error',
-      'no-useless-escape': 'off',
-      'no-console': ['warn', { allow: ['warn', 'error'] }],
-      'no-unused-vars': 'error',
-      'eqeqeq': 'error',
-      'no-var': 'error',
-      'curly': ['error', 'multi-line'],
-      'prefer-const': ['error', { ignoreReadBeforeAssign: true }]
+      'block-spacing': 'error'
+    }
+  },
+  {
+    files: ['test/**/*.js'],
+    languageOptions: {
+      globals: {
+        ...globals.mocha,
+        expect: 'readonly',
+        assert: 'readonly',
+        should: 'readonly'
+      }
     }
   }
 ]
