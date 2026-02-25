@@ -7,15 +7,15 @@ const testConfig = require('./config')
 
 const multisecrets = testConfig?.multisecrets
 const config = testConfig.config
-let secrets = testConfig.secrets
+const secrets = testConfig.secrets
 
 const parameterStore = testConfig.parameterStore
-let secretParameters = testConfig.secretParameters
+const secretParameters = testConfig.secretParameters
 
 // HELPER for console.log checks
 const captureStream = (stream) => {
-  let oldWrite = stream.write
-  var buf = ''
+  const oldWrite = stream.write
+  let buf = ''
   stream.write = (chunk) => {
     buf += chunk.toString()
     oldWrite.apply(stream, arguments)
@@ -128,7 +128,7 @@ describe('Reading secrets', () => {
 
 describe('Check errors', () => {
   it('Check invalid JSON', async() => {
-    let errorSecrets = [
+    const errorSecrets = [
       { name: 'invalidJSON', key: 'errorVar1' }
     ]
     try { 
@@ -289,7 +289,7 @@ describe('Prototype Pollution Protection', () => {
 })
 
 describe('Misc', () => {
-  var hook
+  let hook
   beforeEach(function(){
     hook = captureStream(process.stderr)
   })
