@@ -10,9 +10,11 @@
   },
   "devDependencies": {
     "ac-semantic-release": "^0.4.10",
+    "aws-sdk-client-mock": "^4.1.0",
     "c8": "^11.0.0",
     "chai": "^4.x",
     "eslint": "10.x",
+    "@eslint/js": "^10.0.1",
     "globals": "^17.3.0",
     "mocha": "^11.7.5"
   },
