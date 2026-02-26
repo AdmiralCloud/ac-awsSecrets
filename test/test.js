@@ -480,10 +480,11 @@ describe('loadSecrets', () => {
         secrets: [{ name: 'configVar1', key: '__proto__.polluted' }],
         config
       })
-      expect(({}).polluted).to.be.undefined
+      expect.fail('Should have thrown')
     }
     catch(e) {
       expect(e.message).to.include('unsafe key segment')
+      expect(({}).polluted).to.be.undefined
     }
   })
 })
