@@ -13,9 +13,9 @@ const secretsMock = mockClient(SecretsManagerClient)
 const captureStream = (stream) => {
   const oldWrite = stream.write
   let buf = ''
-  stream.write = (chunk) => {
+  stream.write = (chunk, ...args) => {
     buf += chunk.toString()
-    oldWrite.apply(stream, arguments)
+    oldWrite.apply(stream, [chunk, ...args])
   }
   return {
     unhook: () => { stream.write = oldWrite },
