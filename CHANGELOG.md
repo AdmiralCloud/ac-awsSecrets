@@ -190,7 +190,7 @@ Related issues: [undefined/undefined#master](undefined/browse/master)
 
 ### Feature
 
-* **App:** Allow retrieving paramters by path | MP | [3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed](https://github.com/admiralcloud/ac-awssecrets/commit/3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed)    
+* **App:** Allow retrieving parameters by path | MP | [3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed](https://github.com/admiralcloud/ac-awssecrets/commit/3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed)    
 You can fetch and add multiple parameter from they same path with one entry. See README for example  
 Related issues: [undefined/undefined#master](undefined/browse/master)
 ### Chores
