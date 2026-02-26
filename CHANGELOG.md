@@ -1,3 +1,39 @@
+
+## [3.0.1](https://github.com/admiralcloud/ac-awssecrets/compare/v3.0.0..v3.0.1) (2026-02-26 13:23:41)
+
+
+### Bug Fix
+
+* **App:** Move test condiitions away from main code | MP | [f040449b34d716cb68ba6101fad0a3f53b736755](https://github.com/admiralcloud/ac-awssecrets/commit/f040449b34d716cb68ba6101fad0a3f53b736755)    
+Use mock endpoints for AWS in test and move special conditions for tests from main code.  
+Related issues:
+* **Misc:** Init valueArray as array | MP | [5c1c027b77ff90df5a5f9d1982d64a39de6e2d28](https://github.com/admiralcloud/ac-awssecrets/commit/5c1c027b77ff90df5a5f9d1982d64a39de6e2d28)    
+Init valueArray as array  
+Related issues:
+* **App:** Iterate over parameter path | MP | [dfa9cca66ca45d7e886fe9feb9f398e16a7347ad](https://github.com/admiralcloud/ac-awssecrets/commit/dfa9cca66ca45d7e886fe9feb9f398e16a7347ad)    
+Allow processing of paths with more than 10 secret parameters  
+Related issues:
+* **App:** Code fixes to prevent prototype pollution | MP | [5512b447d729bbc6bc93967df8c9ca365d2ce41b](https://github.com/admiralcloud/ac-awssecrets/commit/5512b447d729bbc6bc93967df8c9ca365d2ce41b)    
+Code fixes to prevent prototype pollution  
+Related issues:
+### Tests
+
+* **App:** Fixed test | MP | [b97eb9d467cd94bcb4a4e57b204d2659040eec96](https://github.com/admiralcloud/ac-awssecrets/commit/b97eb9d467cd94bcb4a4e57b204d2659040eec96)    
+Remove deepMerge test - it is covered by other tests  
+Related issues:
+### Style
+
+* **Misc:** Updated eslint config | MP | [c2d3e45b5fa6c87ae6cef098b8145b3b62ce3e98](https://github.com/admiralcloud/ac-awssecrets/commit/c2d3e45b5fa6c87ae6cef098b8145b3b62ce3e98)    
+Updated eslint config  
+Related issues:
+### Chores
+
+* **App:** Updated packages | MP | [7c091f3a7ff8f3d8f131d6d911cb56ab89fbeb95](https://github.com/admiralcloud/ac-awssecrets/commit/7c091f3a7ff8f3d8f131d6d911cb56ab89fbeb95)    
+Updated packages  
+Related issues:
+* **App:** Updated packages | MP | [18973ef5d916142af9e0f81a40a52087368172a1](https://github.com/admiralcloud/ac-awssecrets/commit/18973ef5d916142af9e0f81a40a52087368172a1)    
+Package updates incl ESLint 9 -> 10 and lint fixes  
+Related issues:
  
 # [3.0.0](https://github.com/admiralcloud/ac-awssecrets/compare/v2.5.7..v3.0.0) (2026-02-03 10:00:56)
 
