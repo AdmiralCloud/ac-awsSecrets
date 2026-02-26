@@ -4,7 +4,7 @@
 
 ### Bug Fix
 
-* **App:** Move test condiitions away from main code | MP | [f040449b34d716cb68ba6101fad0a3f53b736755](https://github.com/admiralcloud/ac-awssecrets/commit/f040449b34d716cb68ba6101fad0a3f53b736755)    
+* **App:** Move test conditions away from main code | MP | [f040449b34d716cb68ba6101fad0a3f53b736755](https://github.com/admiralcloud/ac-awssecrets/commit/f040449b34d716cb68ba6101fad0a3f53b736755)    
 Use mock endpoints for AWS in test and move special conditions for tests from main code.  
 Related issues:
 * **Misc:** Init valueArray as array | MP | [5c1c027b77ff90df5a5f9d1982d64a39de6e2d28](https://github.com/admiralcloud/ac-awssecrets/commit/5c1c027b77ff90df5a5f9d1982d64a39de6e2d28)    
