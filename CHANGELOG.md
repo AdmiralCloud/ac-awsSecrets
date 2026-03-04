@@ -4,7 +4,7 @@
 
 ### Bug Fix
 
-* **App:** Move test condiitions away from main code | MP | [f040449b34d716cb68ba6101fad0a3f53b736755](https://github.com/admiralcloud/ac-awssecrets/commit/f040449b34d716cb68ba6101fad0a3f53b736755)    
+* **App:** Move test conditions away from main code | MP | [f040449b34d716cb68ba6101fad0a3f53b736755](https://github.com/admiralcloud/ac-awssecrets/commit/f040449b34d716cb68ba6101fad0a3f53b736755)    
 Use mock endpoints for AWS in test and move special conditions for tests from main code.  
 Related issues:
 * **Misc:** Init valueArray as array | MP | [5c1c027b77ff90df5a5f9d1982d64a39de6e2d28](https://github.com/admiralcloud/ac-awssecrets/commit/5c1c027b77ff90df5a5f9d1982d64a39de6e2d28)    
@@ -190,7 +190,7 @@ Related issues: [undefined/undefined#master](undefined/browse/master)
 
 ### Feature
 
-* **App:** Allow retrieving paramters by path | MP | [3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed](https://github.com/admiralcloud/ac-awssecrets/commit/3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed)    
+* **App:** Allow retrieving parameters by path | MP | [3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed](https://github.com/admiralcloud/ac-awssecrets/commit/3a2b7be3a3a7cff5132fcb3a19cab6cbb382beed)    
 You can fetch and add multiple parameter from they same path with one entry. See README for example  
 Related issues: [undefined/undefined#master](undefined/browse/master)
 ### Chores
