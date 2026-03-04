@@ -13,9 +13,9 @@ const secretsMock = mockClient(SecretsManagerClient)
 const captureStream = (stream) => {
   const oldWrite = stream.write
   let buf = ''
-  stream.write = (chunk) => {
+  stream.write = (chunk, ...args) => {
     buf += chunk.toString()
-    oldWrite.apply(stream, arguments)
+    oldWrite.apply(stream, [chunk, ...args])
   }
   return {
     unhook: () => { stream.write = oldWrite },
@@ -480,10 +480,11 @@ describe('loadSecrets', () => {
         secrets: [{ name: 'configVar1', key: '__proto__.polluted' }],
         config
       })
-      expect(({}).polluted).to.be.undefined
+      expect.fail('Should have thrown')
     }
     catch(e) {
       expect(e.message).to.include('unsafe key segment')
+      expect(({}).polluted).to.be.undefined
     }
   })
 })
