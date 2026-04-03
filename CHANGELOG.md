@@ -1,3 +1,18 @@
+## [3.0.6](https://github.com/admiralcloud/ac-awssecrets/compare/v3.0.5..v3.0.6) (2026-04-03 07:49:58)
+
+
+### Bug Fix
+
+
+* **App:** Package updates | MP | [39a231c77bd82b4592e48f3bdbe92545d68fa351](https://github.com/admiralcloud/ac-awssecrets/commit/39a231c77bd82b4592e48f3bdbe92545d68fa351)    
+Package updates  
+Related issues:
+### Documentation
+
+
+* **App:** Added badge  | MP | [289b418dbdc0e272551a9e2a18622db21114eca7](https://github.com/admiralcloud/ac-awssecrets/commit/289b418dbdc0e272551a9e2a18622db21114eca7)    
+Added badge to README  
+Related issues:
 
 ## [3.0.5](https://github.com/admiralcloud/ac-awssecrets/compare/v3.0.4..v3.0.5) (2026-03-27 15:21:43)
 
