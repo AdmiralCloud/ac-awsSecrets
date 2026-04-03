@@ -3,7 +3,7 @@ Reads secrets from AWS secrets manager and adds them to the configuration of the
 
 Instead of AWS secrets, you can now also use AWS parameter store (which is not as expensive as AWS secrets)
 
-![example workflow](https://github.com/admiralcloud/ac-awssecrets/actions/workflows/node.js.yml/badge.svg)
+![example workflow](https://github.com/admiralcloud/ac-awssecrets/actions/workflows/node.js.yml/badge.svg) [![CodeQL](https://github.com/AdmiralCloud/ac-awsSecrets/actions/workflows/github-code-scanning/codeql/badge.svg)](https://github.com/AdmiralCloud/ac-awsSecrets/actions/workflows/github-code-scanning/codeql)
 
 
 # Version 2 - BREAKING CHANGES
